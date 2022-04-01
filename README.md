@@ -1,7 +1,9 @@
 # Pi-Pourri
 Several formulae for calculating Pi using python and GMPY2 
 
-I wanted to see how long it would take to calulate pi to a million places to answer a kid's question  I found a page that had a program using Machin's formula from 1706:
+I wanted to see how long it would take to calulate pi to a million places to answer a kid's question  
+
+I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58  that had a program using Machin's formula from 1706:
 
 <img src="https://render.githubusercontent.com/render/math?math={\frac {\pi }{4}}=4\arctan {\frac {1}{5}}-\arctan {\frac {1}{239}}">
 
