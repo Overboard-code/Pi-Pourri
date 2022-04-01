@@ -1,5 +1,5 @@
 # Pi-Pourri
-Several formulae for calculating Pi using python and GMPY2 
+Several formulae for calculating 100 million digits of Pi in 3 minutes, using python and GMPY2 
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question  
 
@@ -7,7 +7,7 @@ I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits
 
 <img src="https://render.githubusercontent.com/render/math?math={\frac {\pi }{4}}=4\arctan {\frac {1}{5}}-\arctan {\frac {1}{239}}">
 
-Using most of the formulae included this code will generate 10 million places of Pi in a few seconds.  
+ 
 
 The article also included a link to several Machin-like formulae:  https://en.wikipedia.org/wiki/Machin-like_formula
 I added several to the code   I also used GMPY's mpfr() and mpz types to speed things along instaed of lust big integer supprt in python  The GMPY2 library has a wide range of high precision functions.  
