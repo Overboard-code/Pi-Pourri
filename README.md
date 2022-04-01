@@ -24,15 +24,15 @@ Finaly I added Arithmatic Geometric Mean </b>
 
 Here is the help for the program type ```pipourri.py -h```  to see it
 ```
-usage: pipourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 9]]
+usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 9]]
 
- pipourri.py runs an algorthym from a list to calulate Pi to a number of decimal places
-      Default: pipourri.py --digits 100000 --file pi.txt --alog 4
+ pi-pourri.py runs an algorthym from a list to calulate Pi to a number of decimal places
+      Default: pi-pourri.py --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
       A last 5 digit check is done on powers of ten (10,...10000000,100000000)
- eg.  pipourri.py --file elbow.txt -d 1000000 -a 4
-      pipourri.py -f test.txt -d 123,456
+ eg.  pi-pourri.py --file elbow.txt -d 1000000 -a 4
+      pi-pourri.py -f test.txt -d 123,456
 
       List of Formulae:
 
