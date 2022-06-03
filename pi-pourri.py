@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Pipourri.py
+# Pi-pourri.py
 # By Andrew Richter
 # March 2022
 #
@@ -18,12 +18,12 @@
 #         12*arctan(1/113021)-100*arctan(1/6826318)-12*arctan(1/33366019650)+
 #         12*arctan(1/43599522992503626068)
 #  or Chudnovosky 1988: π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2)
-# 
+#
 #   Try --help to see the list of available formulae. All have been checked using -d 1,000,000 against https://www.piday.org/million/
 #   I also used the last five digits of known results to check the answers for lengths that are powers of ten (100,....1,000,000,000)
-#   If you want to add a Machin-like_formula, just add it to setOfNames, setOfMults etc.  Each list item Must contain the same 
-#     number of entries (except name of course) 
-#   For Machin-like formulae each calulation for arctan(1/nnnnn) gets its own multiprocessing.Pool() thread.  
+#   If you want to add a Machin-like_formula, just add it to setOfNames, setOfMults etc.  Each list item Must contain the same
+#     number of entries (except name of course)
+#   For Machin-like formulae each calulation for arctan(1/nnnnn) gets its own multiprocessing.Pool() thread.
 #   When all the threads are done the rest of the formula is processed
 #   It calculates pi to -d xxxx places after the decimal The Default is 100,000
 #   and writes the answer to a -f filename The default is pi.txt in the current directory
@@ -38,17 +38,17 @@ import sys,time,multiprocessing,unicodedata,logging,os,argparse
 from datetime import timedelta
 from functools import partial
 try:
-    from gmpy2 import mpz,mul,isqrt,mpfr,atan2,tan,atan,sqrt,get_context  # Gumpy2 mpz large ints are ten times faster than python large int  
+    from gmpy2 import mpz,mpq,mul,isqrt,mpfr,atan2,tan,atan,sqrt,get_context  # Gumpy2 mpz large ints are ten times faster than python large int
 except ImportError:
     raise ImportError('This program requires gmpy2. exiting....')
     sys.exit(1)
 # Change logging to INFO or WARNING to see less output
 logging.basicConfig(level=("DEBUG"),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
-# 
+#
 def say_formula(credit,mults,denoms,signs):
     # format a Manchin like formula string from 3 lists and an author's credit
     saypi = unicodedata.lookup("GREEK SMALL LETTER PI")
-    if ('Chudnovsky' in credit) or ('AGM' in credit):
+    if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit):
         form = credit
     else:
         form = "\t{}\n\t ".format(credit) + saypi + "/4 = "
@@ -61,27 +61,27 @@ def say_formula(credit,mults,denoms,signs):
                 mx = ""
             else:
                 mx = str(mults[i]) + "*"
-            form = form + ' ' + sign + mx + 'arctan(1/' +str(denoms[i]) + ')\n' 
+            form = form + ' ' + sign + mx + 'arctan(1/' +str(denoms[i]) + ')\n'
     return form
 
 class PiAGM:
     LOG2_10 = 3.321928094887362
-    
+
     def __init__(self,ndigits):
         self.ndigits = ndigits
         self.cdigits = ndigits + len(str(ndigits))+9      # Extra digits to reduce trailing error More factors means more error
-        
+        self.iters = 0
+
     def compute(self):
         get_context().precision=int(self.cdigits * self.LOG2_10)
-        epsilon = mpfr(1/mpfr(10**self.cdigits))
+        epsilon = mpfr(1/mpfr(10**self.ndigits))
         logging.debug('AGM precision({:,}) Started '.format(self.ndigits ) )
-        start_time = time.time()      
+        start_time = time.time()
         a = mpfr(1)
         b = mpfr(1/sqrt(mpfr(2)))
 
         diff = mpfr(a - b)
         series = n = mpfr (0)
-        iters = 0
         while diff > epsilon:
             series += mpfr(2)**(n) * (diff**mpfr(2))
             n += mpfr(1)
@@ -89,26 +89,54 @@ class PiAGM:
             geom = mpfr(sqrt(a*b))
             a, b = arith, geom
             diff = mpfr(a - b)
-            iters += 1
-            if (iters % 100  == 0 ):
-                logging.debug('AGM ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - arc_start_time))
+            self.iters += 1
+            if (self.iters % 10  == 0 ):
+                logging.debug('AGM ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - start_time))
         # a and b have converged to the AGM
         get_context().precision=int((self.ndigits+2 ) * self.LOG2_10)
-        my_pi = mpfr(4)*a*a/(mpfr(1) - series)
-        text = str(my_pi)
-        text = text[:-2]
-        logging.debug('AGM Done! {:,} iterations and {:.2f} seconds.'.format(iters,time.time() - start_time) )
-        return  text,iters,time.time()-start_time
-        
+        pi = mpfr(4)*a*a/(mpfr(1) - series)
+        logging.debug('AGM Done! {:,} iterations and {:.2f} seconds.'.format(self.iters,time.time() - start_time) )
+        return  str(pi)[:-2],self.iters,time.time()-start_time
+
+class PiBellard:
+        LOG2_10 = 3.321928094887362
+        def __init__(self,ndigits):
+            self.ndigits = ndigits
+            self.iters = 0
+
+        def compute(self):
+            cdigits = self.ndigits+15
+            get_context().precision=int(cdigits * self.LOG2_10) # Precision isn't digits  need some math
+            start_time = time.time()  # Start the clock for total time
+            logging.debug('Bellard precision({:,}) Started '.format(self.ndigits ) )
+             #http://en.wikipedia.org/wiki/Bellard%27s_formula
+            pi = mpfr(0)
+            for i in range(self.ndigits):
+                a = mpfr(1)/(16**i)
+                b = mpfr(4)/(8*i+1)
+                c = mpfr(2)/(8*i+4)
+                d = mpfr(1)/(8*i+5)
+                e = mpfr(1)/(8*i+6)
+                r = mpfr(a*(b-c-d-e))
+                pi += r
+                self.iters += 1
+                if (self.iters % 10000  == 0 ):
+                    logging.debug('Bellard ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - start_time))
+            get_context().precision=int((self.ndigits+4) * self.LOG2_10) # Precision isn't digits  need some math
+            pi = pi + 0
+            logging.debug('Bellard Done! {:,} iterations and {:.2f} seconds.'.format(self.iters,time.time() - start_time) )
+            return str(pi)[:self.ndigits+2],self.iters,time.time()-start_time
+
+
 class PiMachin:
     LOG2_10 = 3.321928094887362
     def __init__(self,ndigits,name,denoms,mults,operators):
         """ Initialization
         :param int digits: digits of PI computation
         :param string name: name for credit on formula
-        :param list  denoms a lis of ints for the denomiators 
+        :param list  denoms a lis of ints for the denomiators
         :param list  mults: a list of ints as multipliyers for the Machin formula
-        :param list operators: a list of 1 or -1 to cause addition or subtraction 
+        :param list operators: a list of 1 or -1 to cause addition or subtraction
         """
         self.name = name
         self.ndigits = ndigits
@@ -116,9 +144,9 @@ class PiMachin:
         self.mults = mults
         self.operators = operators
         self.xdigits = len(denoms)+7              # Extra digits to reduce trailing error More factors means more error
-        
+
     def ArctanDenom(self,d):
-    
+
         cdigits = self.ndigits+self.xdigits
         get_context().precision=int(cdigits * self.LOG2_10)
         # Calculates arctan(1/d) = 1/d - 1/(3*d^3) + 1/(5*d^5) - 1/(7*d^7) + ...
@@ -138,7 +166,7 @@ class PiMachin:
         ndigits = self.ndigits
         cdigits = self.ndigits+self.xdigits
         logging.info("Starting Machin-Like formula to {:,} decimal places".format(ndigits) )
-        get_context().precision=int(cdigits * self.LOG2_10)             
+        get_context().precision=int(cdigits * self.LOG2_10)
         logging.debug("Starting {} Pool threads to calculate arctan values.".format(len(denoms)) )
         p =  multiprocessing.Pool(processes=(len(denoms))) # get some threads for our pool
         results=p.map(self.ArctanDenom, denoms) # one arctan(1/xxxx) per thread
@@ -157,10 +185,8 @@ class PiMachin:
         pi = mpfr(4) * arctanSum # change pi/4 = x to pi = 4 * x
         # We calculated extra digits to compensate for roundoff error.
         # Chop off the extra digits now.
-        text = str(pi)
-        text = text[:-2]
-        return text,iters,time.time()-start_time
-   
+        return str(pi)[:self.ndigits+2],iters,time.time()-start_time
+
 class PiChudnovsky:
     A = 13591409
     B = 545140134
@@ -185,13 +211,13 @@ class PiChudnovsky:
         self.one_sq = mpz(10) ** (2 * ndigits)
         self.sqrt_c = isqrt(self.E * self.one_sq)
         self.iters  = 0
-        
+
     def compute(self):
         """ Computation """
         try:
             start_time = time.time()
             logging.debug("Starting {} formula to {:,} decimal places".format(name,ndigits) )
-            p, q, t = self.__bsa(0, self.n)      
+            p, q, t = self.__bsa(0, self.n)
             pi = (q * self.D * self.sqrt_c) // t
             logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'.format( name, int(self.iters),time.time() - start_time))
             return str(pi),self.iters,time.time() - start_time
@@ -227,9 +253,9 @@ class PiChudnovsky:
             return [p_ab, q_ab, t_ab]
         except Exception as e:
             raise
-   
-        
-if __name__ == '__main__': 
+
+
+if __name__ == '__main__':
     last5DigitsOfPi = {
              10 : 26535,
             100 : 70679,
@@ -252,17 +278,19 @@ if __name__ == '__main__':
         "Hwang Chien-Lih, 2003",
         "Jörg Uwe Arndt 1993 ",
         "Hwang Chien-Lih, 2004",
+        "\tRadius Generator- Fabrice Bellard?, 1997 \n\tπ = 126N∑n=0(−1)n210n(−254n+1−14n+3+2810n+1−2610n+3−2210n+5−2210n+7+110n+9)\n",
         "\tThe Square AGM - Salamin & Brent, 1976\n\tπ = limit as n goes to infinity  (an+bn)**2/(4tn)\n",
          "\tChudnovsky brothers  1988 \n\tπ = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))\n" ]
-    setOfMults = [ [4,1],  # Machin 1706  
+    setOfMults = [ [4,1],  # Machin 1706
         [44,7,12,24], #  F. C. M. Störmer 1896
         [12,32,5,12], # Kikuo Takano (1982)
         [183,32,68,12,12,100], # Hwang 1997
         [183,32,68,12,100,12,12], # Hwang 2003
-        [36462,135908,274509,39581,178477,114569,146571,61914,69044,89431,43938], # Jörg Uwe Arndt 1993 
-        [36462,26522,19275,3119,3833,5183,37185,11010,3880,16507,7476],  # Hwang 2004 
+        [36462,135908,274509,39581,178477,114569,146571,61914,69044,89431,43938], # Jörg Uwe Arndt 1993
+        [36462,26522,19275,3119,3833,5183,37185,11010,3880,16507,7476],  # Hwang 2004
+        ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
         ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-        ["Place","holder"] ]  # Chudnovsky brothers  1988       
+        ["Place","holder"] ]  # Chudnovsky brothers  1988
     setOfDenoms = [ [5,239],
         [57,239,682,12943],
         [49,57,239,110443],
@@ -270,8 +298,9 @@ if __name__ == '__main__':
         [239,1023,5832,113021,6826318,33366019650,43599522992503626068],
         [390112,485298,683982,1984933,2478328,3449051,18975991,22709274,24208144,201229582,2189376182],
         [51387,485298,683982,1984933,2478328,3449051,18975991,22709274,24208144,201229582,2189376182],
+        ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
         ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-        ["Place","holder"] ] # Chudnovsky brothers  1988 
+        ["Place","holder"] ] # Chudnovsky brothers  1988
     setOfOpers = [ [1,-1],
         [1,1,-1,1],
         [1,1,-1,1],
@@ -279,9 +308,10 @@ if __name__ == '__main__':
         [1,1,-1,1,-1,-1,1],
         [1,1,1,-1,1,-1,-1,1,-1,-1,-1],
         [1,1,1,-1,-1,-1,-1,-1,1,-1,-1],
+        ["Place","holder"], # Improved Hex/Radius - Fabrice Bellard, 1997
         ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-        ["Place","holder"] ] # Chudnovsky brothers  1988 
-        
+        ["Place","holder"] ] # Chudnovsky brothers  1988
+
     numFormulae= len(setOfDenoms)
     formRange="[1 to {}]".format(numFormulae)
     def range_type(test_value, min=1, max=10):
@@ -290,70 +320,75 @@ if __name__ == '__main__':
             return value
         else:
             raise argparse.ArgumentTypeError('value {} not in range {:,} to {:,}'.format(value,min,max))
-            
-    # create strings for each formula for help.  Add here and to the descStr if you added a formula to the lists above  
-    formList = "" 
+
+    # create strings for each formula for help.  Add here and to the descStr if you added a formula to the lists above
+    formList = ""
     for i in range(numFormulae):
         formList += " {} {} \n".format(i+1,say_formula(setOfNames[i],setOfMults[i],setOfDenoms[i],setOfOpers[i]))
-     
+
     pgmName =  os.path.basename(sys.argv[0])
     descStr = """ {0} runs an algoritym from a list to calulate Pi to a number of decimal places
       Default: {0} --digits 100000 --file pi.txt --alog 4
-      
+
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
       A last 5 digit check is done on powers of ten (10,...10000000,100000000)
  eg.  {0} --file elbow.txt -d 1000000 -a 4
       {0} -f test.txt -d 123,456
-      
+
       List of Formulae:
-      
-{1} """.format(pgmName,formList)   
-    parser = argparse.ArgumentParser(description=descStr,formatter_class=argparse.RawDescriptionHelpFormatter ) 
-    # add expected arguments 
-    parser.add_argument('-f','--file', nargs='?', dest='filename', default='pi.txt',   
-                required=False,  help="File Name to write Pi to.. Default is %(default)s") 
+
+{1} """.format(pgmName,formList)
+    parser = argparse.ArgumentParser(description=descStr,formatter_class=argparse.RawDescriptionHelpFormatter )
+    # add expected arguments
+    parser.add_argument('-f','--file', nargs='?', dest='filename', default='pi.txt',
+                required=False,  help="File Name to write Pi to.. Default is %(default)s")
     parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 100,000,000]", default=[100000],
                 type=partial(range_type, min=1, max=100000000), required=False,
-                help="How many digits to calculate.  Default is %(default)s ")       
-    parser.add_argument('-a','--algo',nargs=1, dest='algo', metavar=formRange, default=[4], 
-                type=partial(range_type, min=1, max=numFormulae), required=False, help="Which Machin(like) formula. Default is %(default)s")                 
-  
-    args = parser.parse_args(sys.argv[1:]) 
+                help="How many digits to calculate.  Default is %(default)s ")
+    parser.add_argument('-a','--algo',nargs=1, dest='algo', metavar=formRange, default=[4],
+                type=partial(range_type, min=1, max=numFormulae), required=False, help="Which Machin(like) formula. Default is %(default)s")
+
+    args = parser.parse_args(sys.argv[1:])
     if args.max_digits:
         ndigits = int(args.max_digits[0])
     if args.filename:
         outFileName =  args.filename
     if args.algo:
-        algox =  args.algo[0] - 1 
-   
+        algox =  args.algo[0] - 1
+
     start_time = time.time()  # Start the clock for total time
-   
+
     name = setOfNames[algox]  # pull the chosen formula list from the list of formulae
     denoms = setOfDenoms[algox]
     mults = setOfMults[algox]
     operators = setOfOpers[algox]
     saypi = unicodedata.lookup("GREEK SMALL LETTER PI")
-   
+
     logging.info("Computing {} to ( {:,} digits )".format(saypi,ndigits))
-    
+
     if 'Chudnovsky' in name:
         obj = PiChudnovsky(ndigits)
     else:
         if 'AGM' in name:
             obj = PiAGM(ndigits)
         else:
-            obj = PiMachin(ndigits,name,denoms,mults,operators)
-        
+            if 'Bellard' in name:
+                obj = PiBellard(ndigits)
+            else:
+                obj = PiMachin(ndigits,name,denoms,mults,operators)
+
     pi,iters,tm = obj.compute()
     endDigits = int(pi[-5:])
     if ndigits in last5DigitsOfPi:
             if last5DigitsOfPi[ndigits] == endDigits:
                 logging.info("Last 5 digits of {} were {} as expected at offset {:,}".format(saypi, endDigits,ndigits-5 ))
             else:
-               logging.warning("\nLast 5 digits were {} and are WRONG should be {}\n".format(endDigits, last5DigitsOfPi[ndigits]))
+                logging.warning("\nWRONG WRONG WRONG")
+                logging.warning("\nLast 5 digits were {} and are WRONG should be {}\n".format(endDigits, last5DigitsOfPi[ndigits]))
+                logging.warning("\nWRONG WRONG WRONG")
     else:
         logging.info("Last five digits are {} but length {:,} wasn't in the list of known values".format(endDigits,ndigits))
-        
+
     startWrite = time.time()
     with open(outFileName, 'wt') as outfile:
         outfile.write(pi)
@@ -362,5 +397,5 @@ if __name__ == '__main__':
         .format(saypi,ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
     logging.info('Wrote {:,} digits of {} to file {} in {}'.format(ndigits,saypi,outFileName,str(timedelta(seconds=tw))))
     logging.info("Calculation and write took: {:,} iterations and  {}."
-        .format(int(iters),str(timedelta(seconds=tm))) ) 
+        .format(int(iters),str(timedelta(seconds=tm))) )
     sys.exit(0)
