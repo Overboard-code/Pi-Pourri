@@ -155,7 +155,7 @@ class PiMachin:
         arc_start_time = time.time()  # Start the clock for this arctan calulation
         total = mpfr(atan2(mpfr(1),mpfr(d)))
         logging.debug('arctan(1/{}) Done!   {:.2f} seconds.'.format(int(d),time.time() - arc_start_time))
-        return total,int(1)
+        return total,int(1) # I used to calulate arctan by hand.  Now I just use atan2() so just one iteration
     #
     def compute(self):
         start_time = time.time()  # Start the clock for total time
@@ -169,18 +169,17 @@ class PiMachin:
         get_context().precision=int(cdigits * self.LOG2_10)
         logging.debug("Starting {} Pool threads to calculate arctan values.".format(len(denoms)) )
         p =  multiprocessing.Pool(processes=(len(denoms))) # get some threads for our pool
-        results=p.map(self.ArctanDenom, denoms) # one arctan(1/xxxx) per thread
+        results=p.map(self.ArctanDenom, denoms) # one thread per arctan(1/xxxx) 
         p.close()
         p.join()  # wait for them to finish
         # Now we have the arctan calculations from the pool threads in results[]
         # Apply chosen Formula to the results and calculate pi using mults and signs
         logging.debug ("Now multiplying and summing arctan results")
         arctanSum = pi = mpfr(0)
-        i = iters = 0
-        for tup in results:
-            iters += tup[1]  # Keep track of this thread's iterations for later
-            arctanSum += mpfr(mpfr(self.mults[i])*mpfr(tup[0])*mpfr(self.operators[i])) # Add or subtract the product from the accumulated arctans
-            i += 1 # Next result
+        iters = 0
+        for i, result in enumerate(results):
+            iters += result[1]  # Keep track of this thread's iterations for later
+            arctanSum += mpfr(mpfr(self.mults[i])*mpfr(result[0])*mpfr(self.operators[i])) # Add or subtract the product from the accumulated arctans
         get_context().precision=int((self.ndigits+2) * self.LOG2_10)
         pi = mpfr(4) * arctanSum # change pi/4 = x to pi = 4 * x
         # We calculated extra digits to compensate for roundoff error.
@@ -188,11 +187,11 @@ class PiMachin:
         return str(pi)[:self.ndigits+2],iters,time.time()-start_time
 
 class PiChudnovsky:
-    A = 13591409
-    B = 545140134
-    C = 640320
-    D = 426880
-    E = 10005
+    A = mpz(13591409)
+    B = mpz(545140134)
+    C = mpz(640320)
+    D = mpz(426880)
+    E = mpz(10005)
     C3_24  = C ** 3 // 24
     LOG2_10 = 3.321928094887362
     #DIGITS_PER_TERM = math.log(53360 ** 3) / math.log(10)  #=> 14.181647462725476
@@ -208,7 +207,7 @@ class PiChudnovsky:
         self.ndigits = ndigits
         self.n      = mpz(self.ndigits // self.DIGITS_PER_TERM + 1)
         self.prec   = mpz((self.ndigits + 1) * self.LOG2_10)
-        self.one_sq = mpz(10) ** (2 * ndigits)
+        self.one_sq = mpz(10 ** (2 * ndigits))
         self.sqrt_c = isqrt(self.E * self.one_sq)
         self.iters  = 0
 
@@ -257,16 +256,16 @@ class PiChudnovsky:
 
 if __name__ == '__main__':
     last5DigitsOfPi = {
-             10 : 26535,
-            100 : 70679,
-           1000 : 1989,
-          10000 : 75678,
-         100000 : 24646,
-        1000000 : 58151,
-        1234567 : 14707,
-       10000000 : 55897,
-      100000000 : 51592,
-     1000000000 : 45519,
+             10 : "26535",
+            100 : "70679",
+           1000 : "01989",
+          10000 : "75678",
+         100000 : "24646",
+        1000000 : "58151",
+        1234567 : "14707",
+       10000000 : "55897",
+      100000000 : "51592",
+     1000000000 : "45519",
     }
 #  Took values from lists from Machin and Miachin like formulae here:
 #  https://en.wikipedia.org/wiki/Machin-like_formula
@@ -378,14 +377,12 @@ if __name__ == '__main__':
                 obj = PiMachin(ndigits,name,denoms,mults,operators)
 
     pi,iters,tm = obj.compute()
-    endDigits = int(pi[-5:])
+    endDigits = pi[-5:]
     if ndigits in last5DigitsOfPi:
             if last5DigitsOfPi[ndigits] == endDigits:
                 logging.info("Last 5 digits of {} were {} as expected at offset {:,}".format(saypi, endDigits,ndigits-5 ))
             else:
-                logging.warning("\nWRONG WRONG WRONG")
-                logging.warning("\nLast 5 digits were {} and are WRONG should be {}\n".format(endDigits, last5DigitsOfPi[ndigits]))
-                logging.warning("\nWRONG WRONG WRONG")
+                logging.warning("\n\nWRONG WRONG WRONG\nLast 5 digits were {} and are WRONG should be {}\nWRONG WRONG WRONG\n".format(endDigits, last5DigitsOfPi[ndigits]))         
     else:
         logging.info("Last five digits are {} but length {:,} wasn't in the list of known values".format(endDigits,ndigits))
 
