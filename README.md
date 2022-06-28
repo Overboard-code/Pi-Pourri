@@ -26,9 +26,9 @@ Finaly I added Arithmatic Geometric Mean </b>
 
 Here is the help for the program type ```pipourri.py -h```  to see it
 ```
-usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 9]]
+usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 10]]
 
- pi-pourri.py runs an algorthym from a list to calulate Pi to a number of decimal places
+ pi-pourri.py runs an algoritym from a list to calulate Pi to a number of decimal places
       Default: pi-pourri.py --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
@@ -38,79 +38,81 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 9]]
 
       List of Formulae:
 
- 1      John Machin 1706
-         π/4 =  4*arctan(1/5)
-                - arctan(1/239)
+ 1 	John Machin 1706
+	 π/4 =  4*arctan(1/5)
+ 		- arctan(1/239)
+ 
+ 2 	F. C. M. Störmer 1896
+	 π/4 =  44*arctan(1/57)
+ 		+ 7*arctan(1/239)
+ 		- 12*arctan(1/682)
+ 		+ 24*arctan(1/12943)
+ 
+ 3 	Kikuo Takano 1982
+	 π/4 =  12*arctan(1/49)
+ 		+ 32*arctan(1/57)
+ 		- 5*arctan(1/239)
+ 		+ 12*arctan(1/110443)
+ 
+ 4 	Hwang Chien-Lih, 1997
+	 π/4 =  183*arctan(1/239)
+ 		+ 32*arctan(1/1023)
+ 		- 68*arctan(1/5832)
+ 		+ 12*arctan(1/110443)
+ 		- 12*arctan(1/4841182)
+ 		- 100*arctan(1/6826318)
+ 
+ 5 	Hwang Chien-Lih, 2003
+	 π/4 =  183*arctan(1/239)
+ 		+ 32*arctan(1/1023)
+ 		- 68*arctan(1/5832)
+ 		+ 12*arctan(1/113021)
+ 		- 100*arctan(1/6826318)
+ 		- 12*arctan(1/33366019650)
+ 		+ 12*arctan(1/43599522992503626068)
+ 
+ 6 	Jörg Uwe Arndt 1993 
+	 π/4 =  36462*arctan(1/390112)
+ 		+ 135908*arctan(1/485298)
+ 		+ 274509*arctan(1/683982)
+ 		- 39581*arctan(1/1984933)
+ 		+ 178477*arctan(1/2478328)
+ 		- 114569*arctan(1/3449051)
+ 		- 146571*arctan(1/18975991)
+ 		+ 61914*arctan(1/22709274)
+ 		- 69044*arctan(1/24208144)
+ 		- 89431*arctan(1/201229582)
+ 		- 43938*arctan(1/2189376182)
+ 
+ 7 	Hwang Chien-Lih, 2004
+	 π/4 =  36462*arctan(1/51387)
+ 		+ 26522*arctan(1/485298)
+ 		+ 19275*arctan(1/683982)
+ 		- 3119*arctan(1/1984933)
+ 		- 3833*arctan(1/2478328)
+ 		- 5183*arctan(1/3449051)
+ 		- 37185*arctan(1/18975991)
+ 		- 11010*arctan(1/22709274)
+ 		+ 3880*arctan(1/24208144)
+ 		- 16507*arctan(1/201229582)
+ 		- 7476*arctan(1/2189376182)
+ 
+ 8 	Radius Generator- Fabrice Bellard?, 1997 
+	π = 126N∑n=0(−1)n210n(−254n+1−14n+3+2810n+1−2610n+3−2210n+5−2210n+7+110n+9)
+ 
+ 9 	The Square AGM - Salamin & Brent, 1976
+	π = limit as n goes to infinity  (an+bn)**2/(4tn)
+ 
+ 10 	Chudnovsky brothers  1988 
+	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
 
- 2      F. C. M. Störmer 1896
-         π/4 =  44*arctan(1/57)
-                + 7*arctan(1/239)
-                - 12*arctan(1/682)
-                + 24*arctan(1/12943)
-
- 3      Kikuo Takano 1982
-         π/4 =  12*arctan(1/49)
-                + 32*arctan(1/57)
-                - 5*arctan(1/239)
-                + 12*arctan(1/110443)
-
- 4      Hwang Chien-Lih, 1997
-         π/4 =  183*arctan(1/239)
-                + 32*arctan(1/1023)
-                - 68*arctan(1/5832)
-                + 12*arctan(1/110443)
-                - 12*arctan(1/4841182)
-                - 100*arctan(1/6826318)
-
- 5      Hwang Chien-Lih, 2003
-         π/4 =  183*arctan(1/239)
-                + 32*arctan(1/1023)
-                - 68*arctan(1/5832)
-                + 12*arctan(1/113021)
-                - 100*arctan(1/6826318)
-                - 12*arctan(1/33366019650)
-                + 12*arctan(1/43599522992503626068)
-
- 6      Jörg Uwe Arndt 1993
-         π/4 =  36462*arctan(1/390112)
-                + 135908*arctan(1/485298)
-                + 274509*arctan(1/683982)
-                - 39581*arctan(1/1984933)
-                + 178477*arctan(1/2478328)
-                - 114569*arctan(1/3449051)
-                - 146571*arctan(1/18975991)
-                + 61914*arctan(1/22709274)
-                - 69044*arctan(1/24208144)
-                - 89431*arctan(1/201229582)
-                - 43938*arctan(1/2189376182)
-
- 7      Hwang Chien-Lih, 2004
-         π/4 =  36462*arctan(1/51387)
-                + 26522*arctan(1/485298)
-                + 19275*arctan(1/683982)
-                - 3119*arctan(1/1984933)
-                - 3833*arctan(1/2478328)
-                - 5183*arctan(1/3449051)
-                - 37185*arctan(1/18975991)
-                - 11010*arctan(1/22709274)
-                + 3880*arctan(1/24208144)
-                - 16507*arctan(1/201229582)
-                - 7476*arctan(1/2189376182)
-
- 8      The Square AGM - Salamin & Brent, 1976
-        π = limit as n goes to infinity  (an+bn)**2/(4tn)
-
- 9      Chudnovsky brothers  1988
-        π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
-
-
-
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -f [FILENAME], --file [FILENAME]
                         File Name to write Pi to.. Default is pi.txt
   -d [1 to 100,000,000], --digits [1 to 100,000,000]
                         How many digits to calculate. Default is [100000]
-  -a [1 to 9], --algo [1 to 9]
+  -a [1 to 10], --algo [1 to 10]
                         Which Machin(like) formula. Default is [4]
+
 ```
