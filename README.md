@@ -10,7 +10,7 @@ I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits
  
 
 The article also included a link to several Machin-like formulae:  https://en.wikipedia.org/wiki/Machin-like_formula
-I added several to the code   I also used GMPY's mpfr() and mpz types to speed things along instaed of lust big integer supprt in python  The GMPY2 library has a wide range of high precision functions.  
+I added several to the code   I also used GMPY's mpfr() and mpz types to speed things along instead of just big integer support in python  The GMPY2 library has a wide range of high precision functions.  
 
 I added 7 Machin formulae like:</b>
 
