@@ -24,7 +24,7 @@ Finaly I added Arithmatic Geometric Mean </b>
 
 <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/824a061756f72d84359eba13d2e8bfcda777f9f4">
 
-Here is the help for the program type ```pipourri.py -h```  to see it
+Here is the help for the program type ```python3 pi-pourri.py -h```  to see it
 ```
 usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 10]]
 
