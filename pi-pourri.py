@@ -35,6 +35,14 @@
 #   I used crude timeing using time() - start_time to generate elapsed seconds  There are better ways
 #
 import sys,time,multiprocessing,unicodedata,logging,os,argparse
+try:
+    # https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
+    import Colorer
+except ImportError:
+    pass
+if sys.version_info[0] < 3:
+    print(os.path.basename(__file__) + " requires at least Python 3")
+    exit()
 from datetime import timedelta
 from functools import partial
 try:
@@ -42,16 +50,21 @@ try:
 except ImportError:
     raise ImportError('This program requires gmpy2. exiting....')
     sys.exit(1)
+
 # Change logging to INFO or WARNING to see less output
 logging.basicConfig(level=("DEBUG"),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
+
+# CONSTANTS
+LOG2_10 = 3.321928094887362
+SAYPI = unicodedata.lookup("GREEK SMALL LETTER PI")
+
 #
 def say_formula(credit,mults,denoms,signs):
     # format a Manchin like formula string from 3 lists and an author's credit
-    saypi = unicodedata.lookup("GREEK SMALL LETTER PI")
     if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit):
         form = credit
     else:
-        form = "\t{}\n\t ".format(credit) + saypi + "/4 = "
+        form = "\t{}\n\t ".format(credit) + SAYPI + "/4 = "
         for i in range(0,len(denoms)):
             if i == 0:
                 sign = '' # No leading sign of first arctan multiple
@@ -65,15 +78,13 @@ def say_formula(credit,mults,denoms,signs):
     return form
 
 class PiAGM:
-    LOG2_10 = 3.321928094887362
-
     def __init__(self,ndigits):
         self.ndigits = ndigits
         self.cdigits = ndigits + len(str(ndigits))+9      # Extra digits to reduce trailing error More factors means more error
         self.iters = 0
 
     def compute(self):
-        get_context().precision=int(self.cdigits * self.LOG2_10)
+        get_context().precision=int(self.cdigits * LOG2_10)
         epsilon = mpfr(1/mpfr(10**self.ndigits))
         logging.debug('AGM precision({:,}) Started '.format(self.ndigits ) )
         start_time = time.time()
@@ -93,22 +104,22 @@ class PiAGM:
             if (self.iters % 10  == 0 ):
                 logging.debug('AGM ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - start_time))
         # a and b have converged to the AGM
-        get_context().precision=int((self.ndigits+2 ) * self.LOG2_10)
+        get_context().precision=int((self.ndigits+2 ) * LOG2_10)
         pi = mpfr(4)*a*a/(mpfr(1) - series)
         logging.debug('AGM Done! {:,} iterations and {:.2f} seconds.'.format(self.iters,time.time() - start_time) )
         return  str(pi)[:-2],self.iters,time.time()-start_time
 
 class PiBellard:
-        LOG2_10 = 3.321928094887362
         def __init__(self,ndigits):
             self.ndigits = ndigits
             self.iters = 0
 
         def compute(self):
             cdigits = self.ndigits+15
-            get_context().precision=int(cdigits * self.LOG2_10) # Precision isn't digits  need some math
+            get_context().precision=int(cdigits * LOG2_10) # Precision isn't digits  need some math
             start_time = time.time()  # Start the clock for total time
             logging.debug('Bellard precision({:,}) Started '.format(self.ndigits ) )
+            logging.warning("\nWARNING\nWARNING Will Robinson\nBellard is a generator and will take a very long time for larger values.\n")
              #http://en.wikipedia.org/wiki/Bellard%27s_formula
             pi = mpfr(0)
             for i in range(self.ndigits):
@@ -122,14 +133,14 @@ class PiBellard:
                 self.iters += 1
                 if (self.iters % 10000  == 0 ):
                     logging.debug('Bellard ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - start_time))
-            get_context().precision=int((self.ndigits+4) * self.LOG2_10) # Precision isn't digits  need some math
+            get_context().precision=int((self.ndigits+4) * LOG2_10) # Precision isn't digits  need some math
             pi = pi + 0
             logging.debug('Bellard Done! {:,} iterations and {:.2f} seconds.'.format(self.iters,time.time() - start_time) )
             return str(pi)[:self.ndigits+2],self.iters,time.time()-start_time
 
 
 class PiMachin:
-    LOG2_10 = 3.321928094887362
+
     def __init__(self,ndigits,name,denoms,mults,operators):
         """ Initialization
         :param int digits: digits of PI computation
@@ -148,14 +159,14 @@ class PiMachin:
     def ArctanDenom(self,d):
 
         cdigits = self.ndigits+self.xdigits
-        get_context().precision=int(cdigits * self.LOG2_10)
+        get_context().precision=int(cdigits * LOG2_10)
         # Calculates arctan(1/d) = 1/d - 1/(3*d^3) + 1/(5*d^5) - 1/(7*d^7) + ...
         logging.debug('arctan(1/{} Started ) '.format(d ) )
-        total = mpfr()
+        total = mpfr(0)
         arc_start_time = time.time()  # Start the clock for this arctan calulation
         total = mpfr(atan2(mpfr(1),mpfr(d)))
         logging.debug('arctan(1/{}) Done!   {:.2f} seconds.'.format(int(d),time.time() - arc_start_time))
-        return total,int(1) # I used to calulate arctan by hand.  Now I just use atan2() so just one iteration
+        return total,int(1) # I used to calulate arctan by hand.  Now I just use atan2() so just one iteration here
     #
     def compute(self):
         start_time = time.time()  # Start the clock for total time
@@ -166,7 +177,7 @@ class PiMachin:
         ndigits = self.ndigits
         cdigits = self.ndigits+self.xdigits
         logging.info("Starting Machin-Like formula to {:,} decimal places".format(ndigits) )
-        get_context().precision=int(cdigits * self.LOG2_10)
+        get_context().precision=int(cdigits * LOG2_10)
         logging.debug("Starting {} Pool threads to calculate arctan values.".format(len(denoms)) )
         p =  multiprocessing.Pool(processes=(len(denoms))) # get some threads for our pool
         results=p.map(self.ArctanDenom, denoms) # one thread per arctan(1/xxxx) 
@@ -180,7 +191,7 @@ class PiMachin:
         for i, result in enumerate(results):
             iters += result[1]  # Keep track of this thread's iterations for later
             arctanSum += mpfr(mpfr(self.mults[i])*mpfr(result[0])*mpfr(self.operators[i])) # Add or subtract the product from the accumulated arctans
-        get_context().precision=int((self.ndigits+2) * self.LOG2_10)
+        get_context().precision= int((self.ndigits+2) * LOG2_10)
         pi = mpfr(4) * arctanSum # change pi/4 = x to pi = 4 * x
         # We calculated extra digits to compensate for roundoff error.
         # Chop off the extra digits now.
@@ -193,11 +204,9 @@ class PiChudnovsky:
     D = mpz(426880)
     E = mpz(10005)
     C3_24  = C ** 3 // 24
-    LOG2_10 = 3.321928094887362
     #DIGITS_PER_TERM = math.log(53360 ** 3) / math.log(10)  #=> 14.181647462725476
     DIGITS_PER_TERM = 14.181647462725476
     MMILL = mpz(1000000)
-
 
     def __init__(self,ndigits):
         """ Initialization
@@ -206,20 +215,23 @@ class PiChudnovsky:
         """
         self.ndigits = ndigits
         self.n      = mpz(self.ndigits // self.DIGITS_PER_TERM + 1)
-        self.prec   = mpz((self.ndigits + 1) * self.LOG2_10)
+        self.prec   = mpz((self.ndigits + 1) * LOG2_10)
         self.one_sq = mpz(10 ** (2 * ndigits))
         self.sqrt_c = isqrt(self.E * self.one_sq)
         self.iters  = 0
-
+        self.start_time = 0
+        
     def compute(self):
         """ Computation """
         try:
-            start_time = time.time()
+            self.start_time = time.time()
             logging.debug("Starting {} formula to {:,} decimal places".format(name,ndigits) )
             p, q, t = self.__bsa(0, self.n)
             pi = (q * self.D * self.sqrt_c) // t
-            logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'.format( name, int(self.iters),time.time() - start_time))
-            return str(pi),self.iters,time.time() - start_time
+            logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'.format( name, int(self.iters),time.time() - self.start_time))
+            pi_s = str(pi)  # pi here is a lagre int so we need to stick in a fake decimal point
+            pi_o = pi_s[:1] + "." + pi_s[1:]
+            return pi_o,self.iters,time.time() - self.start_time
         except Exception as e:
             raise
 
@@ -232,7 +244,7 @@ class PiChudnovsky:
         try:
             self.iters += 1
             if (self.iters % self.MMILL  == mpz(0) ):
-                logging.debug('Chudnovsky ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - start_time))
+                logging.debug('Chudnovsky ... {:,} iterations and {:.2f} seconds.'.format( int(self.iters),time.time() - self.start_time))
             if a + 1 == b:
                 if a == 0:
                     p_ab = q_ab = mpz(1)
@@ -255,6 +267,7 @@ class PiChudnovsky:
 
 
 if __name__ == '__main__':
+
     last5DigitsOfPi = {
              10 : "26535",
             100 : "70679",
@@ -330,8 +343,8 @@ if __name__ == '__main__':
       Default: {0} --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
-      A last 5 digit check is done on powers of ten (10,...10000000,100000000)
- eg.  {0} --file elbow.txt -d 1000000 -a 4
+      A last 5 digit check is done on powers of ten (10,...100,000,000)
+ eg.  {0} --file elbow.txt -d 1000000 -a 10
       {0} -f test.txt -d 123,456
 
       List of Formulae:
@@ -361,9 +374,8 @@ if __name__ == '__main__':
     denoms = setOfDenoms[algox]
     mults = setOfMults[algox]
     operators = setOfOpers[algox]
-    saypi = unicodedata.lookup("GREEK SMALL LETTER PI")
 
-    logging.info("Computing {} to ( {:,} digits )".format(saypi,ndigits))
+    logging.info("Computing {} to ( {:,} digits )".format(SAYPI,ndigits))
 
     if 'Chudnovsky' in name:
         obj = PiChudnovsky(ndigits)
@@ -380,7 +392,7 @@ if __name__ == '__main__':
     endDigits = pi[-5:]
     if ndigits in last5DigitsOfPi:
             if last5DigitsOfPi[ndigits] == endDigits:
-                logging.info("Last 5 digits of {} were {} as expected at offset {:,}".format(saypi, endDigits,ndigits-5 ))
+                logging.info("Last 5 digits of {} were {} as expected at offset {:,}".format(SAYPI, endDigits,ndigits-5 ))
             else:
                 logging.warning("\n\nWRONG WRONG WRONG\nLast 5 digits were {} and are WRONG should be {}\nWRONG WRONG WRONG\n".format(endDigits, last5DigitsOfPi[ndigits]))         
     else:
@@ -391,8 +403,8 @@ if __name__ == '__main__':
         outfile.write(pi)
     tw = time.time() - startWrite
     logging.info("Calculated {} to {:,} digits using a formula of:\n {} {} "
-        .format(saypi,ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
-    logging.info('Wrote {:,} digits of {} to file {} in {}'.format(ndigits,saypi,outFileName,str(timedelta(seconds=tw))))
+        .format(SAYPI,ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
+    logging.debug('Wrote {:,} digits of {} to file {} in {}'.format(ndigits,SAYPI,outFileName,str(timedelta(seconds=tw))))
     logging.info("Calculation and write took: {:,} iterations and  {}."
         .format(int(iters),str(timedelta(seconds=tm))) )
     sys.exit(0)
