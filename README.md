@@ -16,7 +16,7 @@ I added 7 Machin formulae like:</b>
 
 <img src="https://render.githubusercontent.com/render/math?math=%7B%5Cdisplaystyle%20%7B%5Cbegin%7Baligned%7D%7B%5Cfrac%20%7B%5Cpi%20%7D%7B4%7D%7D%3D%26%5C%3B183%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B239%7D%7D%2B32%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B1023%7D%7D-68%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B5832%7D%7D%5C%5C%26%2B12%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B110443%7D%7D-12%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B4841182%7D%7D-100%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B6826318%7D%7D%5C%5C%5Cend%7Baligned%7D%7D%7D%0A%20%20%20%20">
 
-Then I added Chudnovsky:</b>
+Then I added Chudnovsky (The clear speed winner):</b>
 
 <img src="https://render.githubusercontent.com/render/math?math=%5Cbegin%7Balign%7D%0Aa%20%20%20%20%20%26%3D%20%5Csum%5E%5Cinfty_%7Bk%3D0%7D%20%5Cfrac%7B(-1)%5Ek%20(6k)!%7D%7B(3k)!(k!)%5E3%20640320%5E%7B3k%7D%7D%20%5C%5C%0A%20%20%20%20%20%20%26%3D%201%0A%20%20%20%20%20%20%20%20%20%20-%20%5Cfrac%7B6%5Ccdot5%5Ccdot4%7D%7B(1)%5E3%20640320%5E3%7D%0A%20%20%20%20%20%20%20%20%20%20%2B%20%5Cfrac%7B12%5Ccdot11%5Ccdot10%5Ccdot9%5Ccdot8%5Ccdot7%7D%7B(2%5Ccdot1)%5E3%20640320%5E6%7D%0A%20%20%20%20%20%20%20%20%20%20-%20%5Cfrac%7B18%5Ccdot17%5Ccdots13%7D%7B(3%5Ccdot2%5Ccdot1)%5E3%20640320%5E%7B9%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%2B%20%5Ccdots%20%5C%5C%0Ab%20%20%20%20%20%26%3D%20%5Csum%5E%5Cinfty_%7Bk%3D0%7D%20%5Cfrac%7B(-1)%5Ek%20(6k)!k%7D%7B(3k)!(k!)%5E3%20640320%5E%7B3k%7D%7D%20%5C%5C%0A%5Cfrac%7B1%7D%7B%5Cpi%7D%20%26%3D%20%5Cfrac%7B13591409a%20%2B%20545140134b%7D%7B426880%20%5Csqrt%7B10005%7D%7D%20%5C%5C%0A%5Cpi%20%20%20%20%20%20%20%20%20%20%20%26%3D%20%5Cfrac%7B426880%20%5Csqrt%7B10005%7D%7D%7B13591409a%20%2B%20545140134b%7D%0A%5Cend%7Balign%7D">
 
