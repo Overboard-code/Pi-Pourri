@@ -1,13 +1,13 @@
 # Pi-Pourri
-Several formulae for calculating 100 million digits of Pi in 3 minutes, using python and GMPY2 
+Several formulae for calculating 100 million digits of Pi in less tahn 5 minutes, using python and GMPY2 
 
-I wanted to see how long it would take to calulate pi to a million places to answer a kid's question  
+I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
+Turns out a million is about .6 seconds. 
 
 I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58  that had a program using Machin's formula from 1706:
 
 <img src="https://render.githubusercontent.com/render/math?math={\frac {\pi }{4}}=4\arctan {\frac {1}{5}}-\arctan {\frac {1}{239}}">
 
- 
 
 The article also included a link to several Machin-like formulae:  https://en.wikipedia.org/wiki/Machin-like_formula
 I added several to the code   I also used GMPY's mpfr() and mpz types to speed things along instead of just big integer support in python  The GMPY2 library has a wide range of high precision functions.  
