@@ -1,5 +1,5 @@
 # Pi-Pourri
-Several formulae for calculating 100 million digits of Pi in less tahn 5 minutes, using python and GMPY2 
+Several formulae for calculating 100 million digits of Pi in less than 5 minutes, using python and GMPY2 
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
 Turns out a million is about .6 seconds. 
