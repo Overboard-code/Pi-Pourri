@@ -24,23 +24,38 @@ Finaly I added Arithmatic Geometric Mean </b>
 
 <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/824a061756f72d84359eba13d2e8bfcda777f9f4">
 
-Here is a sample output:
+Here is a sample output of about 3 minutes for 100 million digits:
 ```
-python pi-pourri.py -d 1,000,000 -a 10
-[INFO] 2022-08-08 10:29:54,461 <module>: MainProcess Computing π to ( 1,000,000 digits )
-[DEBUG] 2022-08-08 10:29:55,008 compute: MainProcess Starting 	Chudnovsky brothers  1988 
+python pi-pourri.py -d 100,000,000 -a 10
+[INFO] 2022-08-08 10:35:01,333 <module>: MainProcess Computing π to ( 100,000,000 digits )
+[DEBUG] 2022-08-08 10:47:53,470 compute: MainProcess Starting 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
- formula to 1,000,000 decimal places
-[DEBUG] 2022-08-08 10:29:55,556 compute: MainProcess 	Chudnovsky brothers  1988 
+ formula to 100,000,000 decimal places
+[DEBUG] 2022-08-08 10:47:58,371 __bsa: MainProcess Chudnovsky ... 1,000,000 iterations and 4.90 seconds.
+[DEBUG] 2022-08-08 10:48:04,872 __bsa: MainProcess Chudnovsky ... 2,000,000 iterations and 11.40 seconds.
+[DEBUG] 2022-08-08 10:48:10,346 __bsa: MainProcess Chudnovsky ... 3,000,000 iterations and 16.88 seconds.
+[DEBUG] 2022-08-08 10:48:20,190 __bsa: MainProcess Chudnovsky ... 4,000,000 iterations and 26.72 seconds.
+[DEBUG] 2022-08-08 10:48:25,702 __bsa: MainProcess Chudnovsky ... 5,000,000 iterations and 32.23 seconds.
+[DEBUG] 2022-08-08 10:48:32,653 __bsa: MainProcess Chudnovsky ... 6,000,000 iterations and 39.18 seconds.
+[DEBUG] 2022-08-08 10:48:38,203 __bsa: MainProcess Chudnovsky ... 7,000,000 iterations and 44.73 seconds.
+[DEBUG] 2022-08-08 10:48:54,911 __bsa: MainProcess Chudnovsky ... 8,000,000 iterations and 61.44 seconds.
+[DEBUG] 2022-08-08 10:49:01,952 __bsa: MainProcess Chudnovsky ... 9,000,000 iterations and 68.48 seconds.
+[DEBUG] 2022-08-08 10:49:07,749 __bsa: MainProcess Chudnovsky ... 10,000,000 iterations and 74.28 seconds.
+[DEBUG] 2022-08-08 10:49:17,676 __bsa: MainProcess Chudnovsky ... 11,000,000 iterations and 84.21 seconds.
+[DEBUG] 2022-08-08 10:49:23,697 __bsa: MainProcess Chudnovsky ... 12,000,000 iterations and 90.23 seconds.
+[DEBUG] 2022-08-08 10:49:30,684 __bsa: MainProcess Chudnovsky ... 13,000,000 iterations and 97.21 seconds.
+[DEBUG] 2022-08-08 10:49:36,577 __bsa: MainProcess Chudnovsky ... 14,000,000 iterations and 103.11 seconds.
+[DEBUG] 2022-08-08 10:50:20,185 compute: MainProcess 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
- calulation Done! 141,027 iterations and 0.55 seconds.
-[INFO] 2022-08-08 10:29:55,640 <module>: MainProcess Last 5 digits of π were 58151 as expected at offset 999,995
-[INFO] 2022-08-08 10:29:55,645 <module>: MainProcess Calculated π to 1,000,000 digits using a formula of:
+ calulation Done! 14,102,733 iterations and 146.71 seconds.
+[INFO] 2022-08-08 10:50:46,180 <module>: MainProcess Last 5 digits of π were 51592 as expected at offset 99,999,995
+[INFO] 2022-08-08 10:50:46,699 <module>: MainProcess Calculated π to 100,000,000 digits using a formula of:
  10 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
  
-[DEBUG] 2022-08-08 10:29:55,645 <module>: MainProcess Wrote 1,000,000 digits of π to file pi.txt in 0:00:00.005300
-[INFO] 2022-08-08 10:29:55,645 <module>: MainProcess Calculation and write took: 141,027 iterations and  0:00:00.631588.
+[DEBUG] 2022-08-08 10:50:46,700 <module>: MainProcess Wrote 100,000,000 digits of π to file pi.txt in 0:00:00.519647
+[INFO] 2022-08-08 10:50:46,700 <module>: MainProcess Calculation and write took: 14,102,733 iterations and  0:02:52.695742.
+
 
 ```
 
