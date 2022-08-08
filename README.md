@@ -24,16 +24,38 @@ Finaly I added Arithmatic Geometric Mean </b>
 
 <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/824a061756f72d84359eba13d2e8bfcda777f9f4">
 
+Here is a sample output:
+```
+python pi-pourri.py -d 1,000,000 -a 10
+[INFO] 2022-08-08 10:29:54,461 <module>: MainProcess Computing π to ( 1,000,000 digits )
+[DEBUG] 2022-08-08 10:29:55,008 compute: MainProcess Starting 	Chudnovsky brothers  1988 
+	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
+ formula to 1,000,000 decimal places
+[DEBUG] 2022-08-08 10:29:55,556 compute: MainProcess 	Chudnovsky brothers  1988 
+	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
+ calulation Done! 141,027 iterations and 0.55 seconds.
+[INFO] 2022-08-08 10:29:55,640 <module>: MainProcess Last 5 digits of π were 58151 as expected at offset 999,995
+[INFO] 2022-08-08 10:29:55,645 <module>: MainProcess Calculated π to 1,000,000 digits using a formula of:
+ 10 	Chudnovsky brothers  1988 
+	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
+ 
+[DEBUG] 2022-08-08 10:29:55,645 <module>: MainProcess Wrote 1,000,000 digits of π to file pi.txt in 0:00:00.005300
+[INFO] 2022-08-08 10:29:55,645 <module>: MainProcess Calculation and write took: 141,027 iterations and  0:00:00.631588.
+
+```
+
+
 Here is the help for the program type ```python3 pi-pourri.py -h```  to see it
 ```
-usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 10]]
+usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]]
+                    [-a [1 to 10]]
 
  pi-pourri.py runs an algoritym from a list to calulate Pi to a number of decimal places
       Default: pi-pourri.py --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
-      A last 5 digit check is done on powers of ten (10,...10000000,100000000)
- eg.  pi-pourri.py --file elbow.txt -d 1000000 -a 4
+      A last 5 digit check is done on powers of ten (10,...100,000,000)
+ eg.  pi-pourri.py --file elbow.txt -d 1000000 -a 10
       pi-pourri.py -f test.txt -d 123,456
 
       List of Formulae:
@@ -105,8 +127,10 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]] [-a [1 to 10]]
  
  10 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
+ 
+ 
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f [FILENAME], --file [FILENAME]
                         File Name to write Pi to.. Default is pi.txt
