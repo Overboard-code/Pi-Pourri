@@ -2,7 +2,13 @@
 Several formulae for calculating 100 million digits of Pi in less than 5 minutes, using python and GMPY2 
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
-Turns out a million is about .6 seconds. 
+Turns out a million is about .6 seconds.
+You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 45 minutes.  You'll need to add a zero to the restriction on line 443 and add a zero to the 100 million of rngMax:
+```
+parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 100,000,000]", default=[100000],
+                type=partial(range_type, rngMin=1, rngMax=100000000), required=False,
+                help="How many digits to calculate.  Default is %(default)s ")
+```
 
 I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58  that had a program using Machin's formula from 1706:
 
@@ -27,35 +33,34 @@ Finaly I added Arithmatic Geometric Mean </b>
 Here is a sample output of about 3 minutes for 100 million digits:
 ```
 python pi-pourri.py -d 100,000,000 -a 10
-[INFO] 2022-08-08 10:35:01,333 <module>: MainProcess Computing π to ( 100,000,000 digits )
-[DEBUG] 2022-08-08 10:47:53,470 compute: MainProcess Starting 	Chudnovsky brothers  1988 
+[INFO] 2022-09-25 15:59:14,361 <module>: MainProcess Computing π to 100,000,000 digits.
+[DEBUG] 2022-09-25 15:59:24,276 compute: MainProcess Starting 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
  formula to 100,000,000 decimal places
-[DEBUG] 2022-08-08 10:47:58,371 __bsa: MainProcess Chudnovsky ... 1,000,000 iterations and 4.90 seconds.
-[DEBUG] 2022-08-08 10:48:04,872 __bsa: MainProcess Chudnovsky ... 2,000,000 iterations and 11.40 seconds.
-[DEBUG] 2022-08-08 10:48:10,346 __bsa: MainProcess Chudnovsky ... 3,000,000 iterations and 16.88 seconds.
-[DEBUG] 2022-08-08 10:48:20,190 __bsa: MainProcess Chudnovsky ... 4,000,000 iterations and 26.72 seconds.
-[DEBUG] 2022-08-08 10:48:25,702 __bsa: MainProcess Chudnovsky ... 5,000,000 iterations and 32.23 seconds.
-[DEBUG] 2022-08-08 10:48:32,653 __bsa: MainProcess Chudnovsky ... 6,000,000 iterations and 39.18 seconds.
-[DEBUG] 2022-08-08 10:48:38,203 __bsa: MainProcess Chudnovsky ... 7,000,000 iterations and 44.73 seconds.
-[DEBUG] 2022-08-08 10:48:54,911 __bsa: MainProcess Chudnovsky ... 8,000,000 iterations and 61.44 seconds.
-[DEBUG] 2022-08-08 10:49:01,952 __bsa: MainProcess Chudnovsky ... 9,000,000 iterations and 68.48 seconds.
-[DEBUG] 2022-08-08 10:49:07,749 __bsa: MainProcess Chudnovsky ... 10,000,000 iterations and 74.28 seconds.
-[DEBUG] 2022-08-08 10:49:17,676 __bsa: MainProcess Chudnovsky ... 11,000,000 iterations and 84.21 seconds.
-[DEBUG] 2022-08-08 10:49:23,697 __bsa: MainProcess Chudnovsky ... 12,000,000 iterations and 90.23 seconds.
-[DEBUG] 2022-08-08 10:49:30,684 __bsa: MainProcess Chudnovsky ... 13,000,000 iterations and 97.21 seconds.
-[DEBUG] 2022-08-08 10:49:36,577 __bsa: MainProcess Chudnovsky ... 14,000,000 iterations and 103.11 seconds.
-[DEBUG] 2022-08-08 10:50:20,185 compute: MainProcess 	Chudnovsky brothers  1988 
+[DEBUG] 2022-09-25 15:59:29,742 __bs: MainProcess Chudnovsky ... 1,000,000 iterations and 5.47 seconds.
+[DEBUG] 2022-09-25 15:59:36,543 __bs: MainProcess Chudnovsky ... 2,000,000 iterations and 12.27 seconds.
+[DEBUG] 2022-09-25 15:59:42,042 __bs: MainProcess Chudnovsky ... 3,000,000 iterations and 17.77 seconds.
+[DEBUG] 2022-09-25 15:59:51,825 __bs: MainProcess Chudnovsky ... 4,000,000 iterations and 27.55 seconds.
+[DEBUG] 2022-09-25 15:59:57,436 __bs: MainProcess Chudnovsky ... 5,000,000 iterations and 33.16 seconds.
+[DEBUG] 2022-09-25 16:00:04,441 __bs: MainProcess Chudnovsky ... 6,000,000 iterations and 40.17 seconds.
+[DEBUG] 2022-09-25 16:00:10,074 __bs: MainProcess Chudnovsky ... 7,000,000 iterations and 45.80 seconds.
+[DEBUG] 2022-09-25 16:00:26,668 __bs: MainProcess Chudnovsky ... 8,000,000 iterations and 62.39 seconds.
+[DEBUG] 2022-09-25 16:00:33,767 __bs: MainProcess Chudnovsky ... 9,000,000 iterations and 69.49 seconds.
+[DEBUG] 2022-09-25 16:00:39,648 __bs: MainProcess Chudnovsky ... 10,000,000 iterations and 75.37 seconds.
+[DEBUG] 2022-09-25 16:00:49,520 __bs: MainProcess Chudnovsky ... 11,000,000 iterations and 85.24 seconds.
+[DEBUG] 2022-09-25 16:00:55,810 __bs: MainProcess Chudnovsky ... 12,000,000 iterations and 91.53 seconds.
+[DEBUG] 2022-09-25 16:01:02,876 __bs: MainProcess Chudnovsky ... 13,000,000 iterations and 98.60 seconds.
+[DEBUG] 2022-09-25 16:01:08,859 __bs: MainProcess Chudnovsky ... 14,000,000 iterations and 104.58 seconds.
+[DEBUG] 2022-09-25 16:01:51,402 compute: MainProcess 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
- calulation Done! 14,102,733 iterations and 146.71 seconds.
-[INFO] 2022-08-08 10:50:46,180 <module>: MainProcess Last 5 digits of π were 51592 as expected at offset 99,999,995
-[INFO] 2022-08-08 10:50:46,699 <module>: MainProcess Calculated π to 100,000,000 digits using a formula of:
+ calulation Done! 14,102,733 iterations and 147.13 seconds.
+[INFO] 2022-09-25 16:02:16,558 <module>: MainProcess Last 5 digits of π were 51592 as expected at offset 99,999,995
+[INFO] 2022-09-25 16:02:17,075 <module>: MainProcess Calculated π to 100,000,000 digits using a formula of:
  10 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
  
-[DEBUG] 2022-08-08 10:50:46,700 <module>: MainProcess Wrote 100,000,000 digits of π to file pi.txt in 0:00:00.519647
-[INFO] 2022-08-08 10:50:46,700 <module>: MainProcess Calculation and write took: 14,102,733 iterations and  0:02:52.695742.
-
+[DEBUG] 2022-09-25 16:02:17,075 <module>: MainProcess Wrote 100,000,000 digits of π to file pi.txt in 0:00:00.516872
+[INFO] 2022-09-25 16:02:17,075 <module>: MainProcess Calculation took 14,102,733 iterations and 0:02:52.269288.
 
 ```
 
