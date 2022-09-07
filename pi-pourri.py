@@ -170,7 +170,7 @@ class PiAGM:
 
     def compute(self):
         get_context().precision=int(self.cdigits * LOG2_10)
-        epsilon = mpfr(1/mpfr(10**self.ndigits))
+        epsilon = mpfr(1)/pow(mpfr(10),self.ndigits)
         logging.debug('AGM precision({:,}) Started '
             .format(self.ndigits ) )
         self.start_time = time.time()
@@ -180,7 +180,7 @@ class PiAGM:
         diff = mpfr(a - b)
         series = n = mpfr (0)
         while diff > epsilon:
-            series += mpfr(2)**(n) * (diff**mpfr(2))
+            series += pow(mpfr(2),n) * (pow(diff,mpfr(2)))
             n += mpfr(1)
             arith = mpfr((a + b)/mpfr (2))
             geom = mpfr(sqrt(a*b))
@@ -212,12 +212,13 @@ class PiBellard:
             .format(self.ndigits ) )
         logging.warning("\nWARNING\nWARNING Will Robinson\nBellard is a generator and will take a very long time for larger values.\n")
         pi = mpfr(0)
+        m8 = mpfr(8)
         for i in range(self.ndigits):
-            a = mpfr(1)/(16**i)
-            b = mpfr(4)/(8*i+1)
-            c = mpfr(2)/(8*i+4)
-            d = mpfr(1)/(8*i+5)
-            e = mpfr(1)/(8*i+6)
+            a = mpfr(1)/(pow(mpfr(16),i))
+            b = mpfr(4)/(m8*i+1)
+            c = mpfr(2)/(m8*i+4)
+            d = mpfr(1)/(m8*i+5)
+            e = mpfr(1)/(m8*i+6)
             r = mpfr(a*(b-c-d-e))
             pi += r
             self.iters += 1
@@ -304,14 +305,14 @@ class slow_chudnovsky:
         """
         self.ndigits = ndigits
         # 20 extra digits fluff for lots of calculations
-        self.scale = mpz(10**(mpz(ndigits+20))) 
+        self.scale = pow(mpz(10),mpz(ndigits+20))
         self.iters = mpz(0)
         self.M10K = mpz(10000)
         self.k = mpz(1)
         self.a_k = mpz(self.scale)
         self.a_sum = mpz(self.scale)
         self.b_sum = mpz(0)
-        self.C_cubed_over_24 = mpz(self.C**3 // 24)
+        self.C_cubed_over_24 = pow(self.C,mpz(3)) // mpz(24)
 
     def compute(self):
         get_context().precision =  int(LOG2_10 * (self.ndigits + 20) )
@@ -348,7 +349,7 @@ class PiChudnovsky:
     C = mpz(640320)
     D = mpz(426880)
     E = mpz(10005)
-    C3_24  = C ** 3 // 24
+    C3_24  = pow(C, mpz(3)) // mpz(24)
     #DIGITS_PER_TERM = math.log(53360 ** 3) / math.log(10)  #=> 14.181647462725476
     DIGITS_PER_TERM = 14.181647462725476
     MMILL = mpz(1000000)
@@ -360,9 +361,9 @@ class PiChudnovsky:
         self.ndigits = ndigits
         self.n      = mpz(self.ndigits // self.DIGITS_PER_TERM + 1)
         self.prec   = mpz((self.ndigits + 1) * LOG2_10)
-        self.one_sq = mpz(10 ** (2 * ndigits))
+        self.one_sq = pow(mpz(10),mpz(2 * ndigits))
         self.sqrt_c = isqrt(self.E * self.one_sq)
-        self.iters  = 0
+        self.iters  = mpz(0)
         self.start_time = 0
 
     def compute(self):
@@ -371,13 +372,13 @@ class PiChudnovsky:
             self.start_time = time.time()
             logging.debug("Starting {} formula to {:,} decimal places"
                 .format(name,ndigits) )
-            __, q, t = self.__bs(0, self.n)  # p is just for recursion
+            __, q, t = self.__bs(mpz(0), self.n)  # p is just for recursion
             pi = (q * self.D * self.sqrt_c) // t
             logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
-            pi_s = str(pi)  # pi here is a lagre int so we need to stick in a fake decimal point
+            pi_s = str(pi)  # pi here is a large int so we need to stick in a fake decimal point
             pi_o = pi_s[:1] + "." + pi_s[1:]
-            return pi_o,self.iters,time.time() - self.start_time
+            return pi_o,int(self.iters),time.time() - self.start_time
         except Exception as e:
             print (e.message, e.args)
             raise
@@ -389,21 +390,21 @@ class PiChudnovsky:
         :return list [int p_ab, int q_ab, int t_ab]
         """
         try:
-            self.iters += 1
+            self.iters += mpz(1)
             if self.iters % self.MMILL  == mpz(0):
                 logging.debug('Chudnovsky ... {:,} iterations and {:.2f} seconds.'
                     .format( int(self.iters),time.time() - self.start_time))
-            if a + 1 == b:
-                if a == 0:
+            if a + mpz(1) == b:
+                if a == mpz(0):
                     p_ab = q_ab = mpz(1)
                 else:
-                    p_ab = mpz((6 * a -5) * (2 * a - 1) * (6 * a - 1))
-                    q_ab = mpz(a * a * a * self.C3_24)
+                    p_ab = mpz((mpz(6) * a - mpz(5)) * (mpz(2) * a - mpz(1)) * (mpz(6) * a - mpz(1)))
+                    q_ab = pow(a,mpz(3)) * self.C3_24
                 t_ab = p_ab * (self.A + self.B * a)
                 if a & 1:
-                    t_ab *= -1
+                    t_ab *= mpz(-1)
             else:
-                m = (a + b) // 2
+                m = (a + b) // mpz(2)
                 p_am, q_am, t_am = self.__bs(a, m)
                 p_mb, q_mb, t_mb = self.__bs(m, b)
                 p_ab = p_am * p_mb
