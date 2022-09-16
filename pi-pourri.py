@@ -169,30 +169,39 @@ class PiAGM:
         self.start_time = 0
 
     def compute(self):
+        # Found formula here: https://www.kurims.kyoto-u.ac.jp/~ooura/pi_fft.html
+        # This is an FFT modified AGM routine  POW() is not used 
         get_context().precision=int(self.cdigits * LOG2_10)
         epsilon = mpfr(1)/pow(mpfr(10),self.ndigits)
-        logging.debug('AGM precision({:,}) Started '
+        logging.debug('AGM precision ({:,}) Started '
             .format(self.ndigits ) )
         self.start_time = time.time()
-        a = mpfr(1)
-        b = mpfr(1/sqrt(mpfr(2)))
-
-        diff = mpfr(a - b)
-        series = n = mpfr (0)
-        while diff > epsilon:
-            series += pow(mpfr(2),n) * (pow(diff,mpfr(2)))
-            n += mpfr(1)
-            arith = mpfr((a + b)/mpfr (2))
-            geom = mpfr(sqrt(a*b))
-            a, b = arith, geom
-            diff = mpfr(a - b)
+        c = mpfr(sqrt(0.125))
+        a  = mpfr(1 + 3 * c )
+        b  = mpfr(  sqrt(a))
+        e = mpfr(b - 0.625)
+        b *= 2  
+        c = e - c
+        a +=  e
+        npow = 4
+        
+        while e > epsilon:
+            npow *= 2
+            e = (a + b) / 2
+            b = sqrt(a * b)
+            e = e - b
+            b *= 2
+            c = c - e
+            a = b + e
             self.iters += 1
             if self.iters % 10  == 0:
                 logging.debug('AGM ... {:,} iterations and {:.2f} seconds.'
                     .format( int(self.iters),time.time() - self.start_time))
         # a and b have converged to the AGM
+        e = e * e / 4
+        a = a + b
         get_context().precision=int((self.ndigits+2 ) * LOG2_10)
-        pi = mpfr(4)*a*a/(mpfr(1) - series)
+        pi =  (a * a - e - e / 2) / (a * c - e) / npow
         logging.debug('AGM Done! {:,} iterations and {:.2f} seconds.'
             .format(self.iters,time.time() - self.start_time) )
         return  str(pi)[:-2],self.iters,time.time()-self.start_time
@@ -202,29 +211,38 @@ class PiBellard:
         self.ndigits = ndigits
         self.iters = 0
         self.start_time = 0
+        self.iter_time = 0
 
     def compute(self):
-        #http://en.wikipedia.org/wiki/Bellard%27s_formula
+        """
+        http://en.wikipedia.org/wiki/Bellard%27s_formula
+        https://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula
+        """
         cdigits = self.ndigits+15
-        get_context().precision=int(cdigits * LOG2_10) # Precision isn't digits  need some math
+        get_context().precision=int(cdigits * LOG2_10) # Precision isn't digits  
         self.start_time = time.time()  # Start the clock for total time
-        logging.debug('Bellard precision({:,}) Started '
+        logging.debug('BBP precision({:,}) Started '
             .format(self.ndigits ) )
-        logging.warning("\nWARNING\nWARNING Will Robinson\nBellard is a generator and will take a very long time for larger values.\n")
+        if self.ndigits > 10000:        
+            logging.warning("\nWARNING\nWARNING Will Robinson\nBellard is a generator and will take a very long time if digits is > 10k.\n")
         pi = mpfr(0)
-        m8 = mpfr(8)
-        for i in range(self.ndigits):
-            a = mpfr(1)/(pow(mpfr(16),i))
-            b = mpfr(4)/(m8*i+1)
-            c = mpfr(2)/(m8*i+4)
-            d = mpfr(1)/(m8*i+5)
-            e = mpfr(1)/(m8*i+6)
+        
+        self.iter_time = time.time()
+        for i in range( ndigits):
+            k = mpfr(i)
+            a = mpfr(1/(pow(16,k)))
+            b = mpfr(4/(8*k+1))
+            c = mpfr(2/(8*k+4))
+            d = mpfr(1/(8*k+5) )
+            e = mpfr(1/(8*k+6) )
             r = mpfr(a*(b-c-d-e))
             pi += r
             self.iters += 1
             if self.iters % 10000  == 0:
-                logging.debug('Bellard ... {:,} iterations and {:.2f} seconds.'
-                    .format( int(self.iters),time.time() - self.start_time))
+                logging.debug('Bellard ... {:,} iterations and {:.2f} seconds 10k iters took {:.2f}.'
+                    .format( int(self.iters),time.time() - self.start_time, time.time() - self.iter_time) )
+                self.iter_time = time.time()
+            
         get_context().precision=int((self.ndigits+4) * LOG2_10) # Precision isn't digits  need some math
         pi = pi + 0
         logging.debug('Bellard Done! {:,} iterations and {:.2f} seconds.'
@@ -376,7 +394,10 @@ class PiChudnovsky:
             pi = (q * self.D * self.sqrt_c) // t
             logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
-            pi_s = str(pi)  # pi here is a large int so we need to stick in a fake decimal point
+            get_context().precision= int((self.ndigits+10) * LOG2_10)
+            pi_s = pi.digits()
+            #pi_f = mpfr(mpz(pi)/pow(mpz(10),ndigits))
+            #pi_o = str(pi_f)[:self.ndigits+2] # pi here is a large int so we need to stick in a fake decimal point
             pi_o = pi_s[:1] + "." + pi_s[1:]
             return pi_o,int(self.iters),time.time() - self.start_time
         except Exception as e:
