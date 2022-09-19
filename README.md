@@ -148,6 +148,7 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]]
  10 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
  
+ 11 	const_pi() function from the gmpy2 library 
  
 
 options:
@@ -156,7 +157,6 @@ options:
                         File Name to write Pi to.. Default is pi.txt
   -d [1 to 100,000,000], --digits [1 to 100,000,000]
                         How many digits to calculate. Default is [100000]
-  -a [1 to 10], --algo [1 to 10]
+  -a [1 to 11], --algo [1 to 11]
                         Which Machin(like) formula. Default is [4]
-
 ```
