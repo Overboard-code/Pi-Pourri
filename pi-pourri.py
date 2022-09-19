@@ -46,7 +46,7 @@ if sys.version_info[0] < 3:
     print(os.path.basename(__file__) + " requires at least Python 3")
     sys.exit(1)
 try:
-    from gmpy2 import mpz,isqrt,mpfr,atan2,sqrt,get_context  # Gumpy2 mpz large ints are ten times faster than python large int
+    from gmpy2 import mpz,isqrt,mpfr,atan2,sqrt,get_context,const_pi  # Gumpy2 mpz large ints are ten times faster than python large int
 except ImportError as exc:
     raise ImportError('This program requires gmpy2, please insatll. exiting....') from exc
 
@@ -84,7 +84,8 @@ SET_OF_NAMES = ["John Machin 1706",
     "Hwang Chien-Lih, 2004",
     "\tRadius Generator- Fabrice Bellard?, 1997 \n\tπ = 126N∑n=0(−1)n210n(−254n+1−14n+3+2810n+1−2610n+3−2210n+5−2210n+7+110n+9)\n",
     "\tThe Square AGM - Salamin & Brent, 1976\n\tπ = limit as n goes to infinity  (an+bn)**2/(4tn)\n",
-     "\tChudnovsky brothers  1988 \n\tπ = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))\n" ]
+     "\tChudnovsky brothers  1988 \n\tπ = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))\n",
+     "\tconst_pi() function from the gmpy2 library" ]
 SET_OF_MULTS = [ [4,1],  # Machin 1706
     [44,7,12,24], #  F. C. M. Störmer 1896
     [12,32,5,12], # Kikuo Takano (1982)
@@ -94,7 +95,8 @@ SET_OF_MULTS = [ [4,1],  # Machin 1706
     [36462,26522,19275,3119,3833,5183,37185,11010,3880,16507,7476],  # Hwang 2004
     ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-    ["Place","holder"] ]  # Chudnovsky brothers  1988
+    ["Place","holder"],  # Chudnovsky brothers  1988
+    ["Place","holder"] ]  # gmpy2 const_pi() 
 SET_OF_DENOMS = [ [5,239],
     [57,239,682,12943],
     [49,57,239,110443],
@@ -104,7 +106,8 @@ SET_OF_DENOMS = [ [5,239],
     [51387,485298,683982,1984933,2478328,3449051,18975991,22709274,24208144,201229582,2189376182],
     ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-    ["Place","holder"] ] # Chudnovsky brothers  1988
+    ["Place","holder"], # Chudnovsky brothers  1988
+    ["Place","holder"] ]  # gmpy2 const_pi() 
 SET_OF_OPERS = [ [1,-1],
     [1,1,-1,1],
     [1,1,-1,1],
@@ -114,7 +117,8 @@ SET_OF_OPERS = [ [1,-1],
     [1,1,1,-1,-1,-1,-1,-1,1,-1,-1],
     ["Place","holder"], # Improved Hex/Radius - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-    ["Place","holder"] ] # Chudnovsky brothers  1988
+    ["Place","holder"], # Chudnovsky brothers  1988
+    ["Place","holder"] ]  # gmpy2 const_pi() 
 
 NUM_OF_FORMULAE = len(SET_OF_DENOMS)
 FROM_RANGE = "[1 to {}]".format(NUM_OF_FORMULAE)
@@ -129,7 +133,7 @@ def say_formula(credit,mults,denoms,signs):
         :return string: printed version of the formula
         """
     # format a Manchin like formula string from 3 lists and an author's credit or just print others
-    if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit):
+    if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit) or ("const_pi" in credit):
         form = credit
     else:
         form = "\t{}\n\t ".format(credit) + SAYPI + "/4 = "
@@ -361,6 +365,7 @@ class slow_chudnovsky:
 class PiChudnovsky:
     """Version of Chudnovsky Bros using Binary Splitting 
         So far this is the winner for fastest time to a million digits on my older intel i7
+        https://gist.github.com/komasaru/c3f5227513e1692c8fba42fe337316bc started here.  Mine is about 15% faster
     """
     A = mpz(13591409)
     B = mpz(545140134)
@@ -436,6 +441,26 @@ class PiChudnovsky:
             print (e.message, e.args)
             raise
 
+class PiConstant:
+    def __init__(self,ndigits):
+        """ Initialization
+        :param int ndigits: digits of PI computation
+        """
+        self.ndigits = ndigits
+        self.iters = 1
+        self.start_time = 0
+
+    def compute(self):
+        """ Computation """
+        logging.debug("Starting {} formula to {:,} decimal places"
+                .format(name,self.ndigits) )
+        precn = int((self.ndigits + 2) * LOG2_10) 
+        self.start_time = time.time()
+        my_pi = str(const_pi(precn))[:-2]
+        logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
+                .format( name, int(self.iters),time.time() - self.start_time))
+        return my_pi,self.iters,time.time()-self.start_time 
+
 # Main for running one of the classes and saving the output
 if __name__ == '__main__':
 
@@ -493,7 +518,10 @@ if __name__ == '__main__':
             if 'Bellard' in name:
                 obj = PiBellard(ndigits)
             else:
-                obj = PiMachin(ndigits,name,denoms,mults,operators)
+                if "const_pi" in name:
+                    obj = PiConstant(ndigits)
+                else:
+                    obj = PiMachin(ndigits,name,denoms,mults,operators)
     # Calculate Pi using selected formula
     pi,iters,time_to_calc = obj.compute()
 
