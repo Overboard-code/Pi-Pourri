@@ -474,7 +474,7 @@ if __name__ == '__main__':
       Default: {0} --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
-      A last 5 digit check is done on powers of ten (10,...100,000,000)
+      A last 5 digit validity check is done on powers of ten (10,...100,000,000)
  eg.  {0} --file elbow.txt -d 1000000 -a 10
       {0} -f test.txt -d 123,456
 
@@ -484,7 +484,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=DESC_STRING,formatter_class=argparse.RawDescriptionHelpFormatter )
     # add expected arguments
     parser.add_argument('-f','--file', nargs='?', dest='filename', default='pi.txt',
-                required=False,  help="File Name to write Pi to.. Default is %(default)s")
+                required=False,  help="File Name to write Pi to.. Default is [%(default)s]")
     parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 100,000,000]", default=[100000],
                 type=partial(range_type, rngMin=1, rngMax=100000000), required=False,
                 help="How many digits to calculate.  Default is %(default)s ")
