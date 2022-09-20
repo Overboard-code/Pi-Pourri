@@ -6,6 +6,7 @@
 #   I started with picrunch.py by Don Cross
 # See his wonderful article at:
 # https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58
+# and See: http://www.craig-wood.com/nick/articles/pi-chudnovsky/ 
 #   I had a kid ask me "How long would it take to calcuate a Million digits of Pi?"
 #   This code can Use Machin's Formula or one of the Machin Like formulae with gmpy2 mpz() for the numbers
 #    Machin 1706
