@@ -400,9 +400,7 @@ class PiChudnovsky:
             logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
             get_context().precision= int((self.ndigits+10) * LOG2_10)
-            pi_s = pi.digits()
-            #pi_f = mpfr(mpz(pi)/pow(mpz(10),ndigits))
-            #pi_o = str(pi_f)[:self.ndigits+2] # pi here is a large int so we need to stick in a fake decimal point
+            pi_s = pi.digits() # gmpy's digits() returns a string of the mpz int
             pi_o = pi_s[:1] + "." + pi_s[1:]
             return pi_o,int(self.iters),time.time() - self.start_time
         except Exception as e:
