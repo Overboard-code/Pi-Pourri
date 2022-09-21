@@ -3,11 +3,7 @@ Several formulae for calculating 100 million digits of Pi in less than 5 minutes
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
 Turns out a million is about .6 seconds.
-You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 45 minutes.  You'll need to add a zero to the restriction on line 443 and add a zero to the 100 million of rngMax:
-```
-parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 100,000,000]", default=[100000],
-                type=partial(range_type, rngMin=1, rngMax=100000000), required=False,
-                help="How many digits to calculate.  Default is %(default)s ")
+You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 45 minutes. Others take around an hour.  Manchin formulas take longer, I only had patience for 100 million at 35 minutes, Manchin would take about 9 hours for a billion I think. Memory gets to be a big deal for Manchin 30 or forty GIG.  
 ```
 
 I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58  that had a program using Machin's formula from 1706:
