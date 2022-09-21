@@ -1,10 +1,10 @@
 # Pi-Pourri
-Several formulae for calculating 100 million digits of Pi in less than 5 minutes, using python and GMPY2 
+Several formulae for calculating 100 million digits of Pi in less than 5 minutes and a Billion in an hour, using python and GMPY2 
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
-Turns out a million is about .6 seconds.
-You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 45 minutes. Others take around an hour.  Manchin formulas take longer, I only had patience for 100 million at 35 minutes, Manchin would take about 9 hours for a billion I think. Memory gets to be a big deal for Manchin 30 or forty GIG.  
-```
+ Turns out a million is about .6 seconds.
+ 
+You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 45 minutes. Others take around an hour.  Manchin formulas take longer, I only had patience for 100 million at 35 minutes, Manchin would take about 9 hours for a billion I think. Memory gets to be a big deal for Manchin 30 or forty GIG.    Don't even try a million with Bellard (--alog 8).   
 
 I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits-of-pi-d62ce3db8f58  that had a program using Machin's formula from 1706:
 
@@ -12,21 +12,23 @@ I found a page https://medium.com/@cosinekitty/how-to-calculate-a-million-digits
 
 
 The article also included a link to several Machin-like formulae:  https://en.wikipedia.org/wiki/Machin-like_formula
-I added several to the code   I also used GMPY's mpfr() and mpz types to speed things along instead of just big integer support in python  The GMPY2 library has a wide range of high precision functions.  
+I added several to the code.  I also used GMPY2's mpfr() and mpz types to speed things along instead of just big integer support in python.  The GMPY2 library has a wide range of arbitrary precision math functions.  I also changed all of the Manchin type formulae use Multiproccessing, so the more CPUs the better. 
 
 I added 7 Machin formulae like:</b>
 
 <img src="https://render.githubusercontent.com/render/math?math=%7B%5Cdisplaystyle%20%7B%5Cbegin%7Baligned%7D%7B%5Cfrac%20%7B%5Cpi%20%7D%7B4%7D%7D%3D%26%5C%3B183%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B239%7D%7D%2B32%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B1023%7D%7D-68%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B5832%7D%7D%5C%5C%26%2B12%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B110443%7D%7D-12%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B4841182%7D%7D-100%5Carctan%20%7B%5Cfrac%20%7B1%7D%7B6826318%7D%7D%5C%5C%5Cend%7Baligned%7D%7D%7D%0A%20%20%20%20">
 
-Then I added Chudnovsky (The clear speed winner):</b>
+Then I changed and added the Chudnovsky Bros. formula (The clear speed winner!) from Criag Wood's cool article https://www.craig-wood.com/nick/articles/pi-chudnovsky/:</b>
 
 <img src="https://render.githubusercontent.com/render/math?math=%5Cbegin%7Balign%7D%0Aa%20%20%20%20%20%26%3D%20%5Csum%5E%5Cinfty_%7Bk%3D0%7D%20%5Cfrac%7B(-1)%5Ek%20(6k)!%7D%7B(3k)!(k!)%5E3%20640320%5E%7B3k%7D%7D%20%5C%5C%0A%20%20%20%20%20%20%26%3D%201%0A%20%20%20%20%20%20%20%20%20%20-%20%5Cfrac%7B6%5Ccdot5%5Ccdot4%7D%7B(1)%5E3%20640320%5E3%7D%0A%20%20%20%20%20%20%20%20%20%20%2B%20%5Cfrac%7B12%5Ccdot11%5Ccdot10%5Ccdot9%5Ccdot8%5Ccdot7%7D%7B(2%5Ccdot1)%5E3%20640320%5E6%7D%0A%20%20%20%20%20%20%20%20%20%20-%20%5Cfrac%7B18%5Ccdot17%5Ccdots13%7D%7B(3%5Ccdot2%5Ccdot1)%5E3%20640320%5E%7B9%7D%7D%0A%20%20%20%20%20%20%20%20%20%20%2B%20%5Ccdots%20%5C%5C%0Ab%20%20%20%20%20%26%3D%20%5Csum%5E%5Cinfty_%7Bk%3D0%7D%20%5Cfrac%7B(-1)%5Ek%20(6k)!k%7D%7B(3k)!(k!)%5E3%20640320%5E%7B3k%7D%7D%20%5C%5C%0A%5Cfrac%7B1%7D%7B%5Cpi%7D%20%26%3D%20%5Cfrac%7B13591409a%20%2B%20545140134b%7D%7B426880%20%5Csqrt%7B10005%7D%7D%20%5C%5C%0A%5Cpi%20%20%20%20%20%20%20%20%20%20%20%26%3D%20%5Cfrac%7B426880%20%5Csqrt%7B10005%7D%7D%7B13591409a%20%2B%20545140134b%7D%0A%5Cend%7Balign%7D">
 
-Finaly I added Arithmatic Geometric Mean </b>
+Finaly I added a version of Arithmatic Geometric Mean by T.Ooura  https://www.kurims.kyoto-u.ac.jp/~ooura/pi_fft.html: </b>
 
 <img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/824a061756f72d84359eba13d2e8bfcda777f9f4">
 
-Here is a sample output of about 3 minutes for 100 million digits:
+The GMPY2.const_pi() function (--alog 11) seems to be about as fast as this AGM  (--alog 9).  Both are about half as fast as the Chudnovsky one for larger numbers of digits (> 100,000) 
+
+Here is a sample output of Binary Splitting Chudnovsky, about 3 minutes for 100 million digits on my old laptop:
 ```
 python pi-pourri.py -d 100,000,000 -a 10
 [INFO] 2022-09-25 15:59:14,361 <module>: MainProcess Computing π to 100,000,000 digits.
@@ -59,18 +61,22 @@ python pi-pourri.py -d 100,000,000 -a 10
 [INFO] 2022-09-25 16:02:17,075 <module>: MainProcess Calculation took 14,102,733 iterations and 0:02:52.269288.
 
 ```
+Here is a version of Criag Wood's chart:
+
+![Pi_speed_compare](https://user-images.githubusercontent.com/53097137/191532672-d17c5507-c803-46e7-aa67-1b01a71de59a.png)
+
 
 
 Here is the help for the program type ```python3 pi-pourri.py -h```  to see it
 ```
-usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 100,000,000]]
-                    [-a [1 to 10]]
+usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
+                    [-a [1 to 11]]
 
  pi-pourri.py runs an algoritym from a list to calulate Pi to a number of decimal places
       Default: pi-pourri.py --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
-      A last 5 digit check is done on powers of ten (10,...100,000,000)
+      A last 5 digit check is done on powers of ten (10,...1,000,000,000)
  eg.  pi-pourri.py --file elbow.txt -d 1000000 -a 10
       pi-pourri.py -f test.txt -d 123,456
 
