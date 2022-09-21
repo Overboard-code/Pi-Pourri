@@ -484,8 +484,8 @@ if __name__ == '__main__':
     # add expected arguments
     parser.add_argument('-f','--file', nargs='?', dest='filename', default='pi.txt',
                 required=False,  help="File Name to write Pi to.. Default is [%(default)s]")
-    parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 100,000,000]", default=[100000],
-                type=partial(range_type, rngMin=1, rngMax=100000000), required=False,
+    parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 1,000,000,000]", default=[100000],
+                type=partial(range_type, rngMin=1, rngMax=1000000000), required=False,
                 help="How many digits to calculate.  Default is %(default)s ")
     parser.add_argument('-a','--algo',nargs=1, dest='algo', metavar=FROM_RANGE, default=[4],
                 type=partial(range_type, rngMin=1, rngMax=NUM_OF_FORMULAE), required=False, help="Which Machin(like) formula. Default is %(default)s")
