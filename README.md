@@ -61,7 +61,7 @@ python pi-pourri.py -d 100,000,000 -a 10
 [INFO] 2022-09-25 16:02:17,075 <module>: MainProcess Calculation took 14,102,733 iterations and 0:02:52.269288.
 
 ```
-Here is a version of Criag Wood's chart:
+Here is a version of Craig Wood's chart:
 
 ![Pi_speed_compare](https://user-images.githubusercontent.com/53097137/191532672-d17c5507-c803-46e7-aa67-1b01a71de59a.png)
 
