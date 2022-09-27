@@ -209,7 +209,7 @@ class PiAGM:
         pi =  (a * a - e - e / 2) / (a * c - e) / npow
         logging.debug('AGM Done! {:,} iterations and {:.2f} seconds.'
             .format(self.iters,time.time() - self.start_time) )
-        return  str(pi)[:-2],self.iters,time.time()-self.start_time
+        return  "{0:.{1}Df}".format(pi,self.ndigits),self.iters,time.time()-self.start_time
 
 class PiBellard:
     def __init__(self,ndigits):
@@ -248,11 +248,9 @@ class PiBellard:
                     .format( int(self.iters),time.time() - self.start_time, time.time() - self.iter_time) )
                 self.iter_time = time.time()
             
-        get_context().precision=int((self.ndigits+4) * LOG2_10) # Precision isn't digits  need some math
-        pi = pi + 0
         logging.debug('Bellard Done! {:,} iterations and {:.2f} seconds.'
             .format(self.iters,time.time() - self.start_time) )
-        return str(pi)[:self.ndigits+2],self.iters,time.time()-self.start_time
+        return "{0:.{1}Df}".format(pi,self.ndigits),self.iters,time.time()-self.start_time
 
 
 class PiMachin:
@@ -307,11 +305,10 @@ class PiMachin:
         for i, result in enumerate(results):
             iters += result[1]  # Keep track of this thread's iterations for later
             arctanSum += mpfr(mpfr(self.mults[i])*mpfr(result[0])*mpfr(self.operators[i])) # Add or subtract the product from the accumulated arctans
-        get_context().precision= int((self.ndigits+2) * LOG2_10)
         pi = mpfr(4) * arctanSum # change pi/4 = x to pi = 4 * x
         # We calculated extra digits to compensate for roundoff error.
-        # Chop off the extra digits now.
-        return str(pi)[:self.ndigits+2],iters,time.time()-self.start_time
+        # Chop off the extra digits with format() using D to basically trunc() to ndigits
+        return "{0:.{1}Df}".format(pi,self.ndigits),iters,time.time()-self.start_time
 
 class slow_chudnovsky:
     A = mpz(13591409)
@@ -360,7 +357,7 @@ class slow_chudnovsky:
         logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
         # Chop off extra 20 digits 
-        return str(pi)[:-20],int(self.iters),time.time() - self.start_time
+        return "{0:.{1}Df}".format(pi,self.ndigits),int(self.iters),time.time() - self.start_time
 
 
 class PiChudnovsky:
@@ -400,9 +397,8 @@ class PiChudnovsky:
             pi = (q * self.D * self.sqrt_c) // t
             logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
-            get_context().precision= int((self.ndigits+10) * LOG2_10)
-            pi_s = pi.digits() # gmpy's digits() returns a string of the mpz int
-            pi_o = pi_s[:1] + "." + pi_s[1:]
+            pi_s = pi.digits() # gmpy2's digits() returns a string of the mpz int '314....'
+            pi_o = f"{pi_s[:1]}.{pi_s[1:]}"  # There has to be a better way to insert a '.' after the 3!
             return pi_o,int(self.iters),time.time() - self.start_time
         except Exception as e:
             print (e.message, e.args)
@@ -453,9 +449,9 @@ class PiConstant:
         """ Computation """
         logging.debug("Starting {} formula to {:,} decimal places"
                 .format(name,self.ndigits) )
-        precn = int((self.ndigits + 2) * LOG2_10) 
+        precn = int((self.ndigits+2) * LOG2_10) 
         self.start_time = time.time()
-        my_pi = str(const_pi(precn))[:-2]
+        my_pi = "{0:.{1}Df}".format(const_pi(precn),ndigits)
         logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
                 .format( name, int(self.iters),time.time() - self.start_time))
         return my_pi,self.iters,time.time()-self.start_time 
