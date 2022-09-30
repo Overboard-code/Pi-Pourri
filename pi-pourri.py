@@ -472,9 +472,10 @@ if __name__ == '__main__':
       List of Formulae:
 
 {1} """.format(pgmName,FORMULA_LIST)
+
     parser = argparse.ArgumentParser(description=DESC_STRING,formatter_class=argparse.RawDescriptionHelpFormatter )
     # add expected arguments
-    parser.add_argument('-f','--file', nargs='?', dest='filename', default='pi.txt',
+    parser.add_argument('-f','--file', nargs='?', dest='filename', default='No File',
                 required=False,  help="File Name to write Pi to.. Default is [%(default)s]")
     parser.add_argument('-d','--digits', nargs=1, dest='max_digits', metavar="[1 to 1,000,000,000]", default=[100000],
                 type=partial(range_type, rngMin=1, rngMax=1000000000), required=False,
@@ -525,17 +526,18 @@ if __name__ == '__main__':
             logging.warning("\n\nWRONG WRONG WRONG\nLast 5 digits were {} and are WRONG should be {}\nWRONG WRONG WRONG\n"
                 .format(endDigits,LAST_5_DIGITS_OF_PI[ndigits]) )
     else:
-        logging.info("Did not check last 5 digits of result, {:,} wasn't in the list of known values"
+        logging.info("Did not check last 5 digits of result {} wasn't in the list of known values"
             .format(ndigits) )
-
-    startWrite = time.time()
-    with open(outFileName, mode='wt',encoding="utf-8") as outfile:
-        outfile.write(pi)
-    time_to_write = time.time() - startWrite
+    if outFileName != "No File":  # File write? 
+        startWrite = time.time()
+        with open(outFileName, mode='wt',encoding="utf-8") as outfile:
+            outfile.write(pi)
+        time_to_write = time.time() - startWrite
+        logging.debug('Wrote {:,} digits of π to file {} in {} seconds'
+        .format(ndigits,outFileName,str(timedelta(seconds=time_to_write))))
+   
     logging.info("Calculated π to {:,} digits using a formula of:\n {} {} "
         .format(ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
-    logging.debug('Wrote {:,} digits of π to file {} in {}'
-        .format(ndigits,outFileName,str(timedelta(seconds=time_to_write))))
     logging.info("Calculation took {:,} iterations and {}."
         .format(int(iters),str(timedelta(seconds=time_to_calc))) )
     sys.exit(0)
