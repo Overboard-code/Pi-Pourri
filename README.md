@@ -161,4 +161,6 @@ options:
                         How many digits to calculate. Default is [100000]
   -a [1 to 11], --algo [1 to 11]
                         Which Machin(like) formula. Default is [4]
+  --verbose, -v
+  --quiet, -q			
 ```
