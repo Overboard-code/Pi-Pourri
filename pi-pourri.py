@@ -43,13 +43,10 @@ try:
     import Colorer
 except ImportError:
     pass
-if sys.version_info[0] < 3:
-    print(os.path.basename(__file__) + " requires at least Python 3")
-    sys.exit(1)
 try:
     from gmpy2 import mpz,isqrt,mpfr,atan2,sqrt,get_context,const_pi  # Gumpy2 mpz large ints are ten times faster than python large int
-except ImportError as exc:
-    raise ImportError('This program requires gmpy2, please insatll. exiting....') from exc
+except ImportError:
+    raise ImportError('This program requires gmpy2, please insatll. exiting....')
 
 # Change logging to INFO or WARNING to see less output
 logging.basicConfig(level=("DEBUG"),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
@@ -60,7 +57,6 @@ if sys.getdefaultencoding() != 'utf-8':
 
 # CONSTANTS
 LOG2_10 = 3.321928094887362
-SAYPI = unicodedata.lookup("GREEK SMALL LETTER PI")
 LAST_5_DIGITS_OF_PI = {
              10 : "26535",
             100 : "70679",
@@ -137,7 +133,7 @@ def say_formula(credit,mults,denoms,signs):
     if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit) or ("const_pi" in credit):
         form = credit
     else:
-        form = "\t{}\n\t ".format(credit) + SAYPI + "/4 = "
+        form = "\t{}\n\t ".format(credit) + "π/4 = "
         for i in range(0,len(denoms)):
             if i == 0:
                 sign = '' # No leading sign of first arctan multiple
@@ -501,8 +497,8 @@ if __name__ == '__main__':
     mults = SET_OF_MULTS[algox]
     operators = SET_OF_OPERS[algox]
 
-    logging.info("Computing {} to {:,} digits."
-            .format(SAYPI,ndigits))
+    logging.info("Computing π to {:,} digits."
+            .format(ndigits))
 
     if 'Chudnovsky' in name:
         obj = PiChudnovsky(ndigits)
@@ -523,8 +519,8 @@ if __name__ == '__main__':
     if ndigits in LAST_5_DIGITS_OF_PI:
         endDigits = pi[-5:]  # Pull the last 5 digits for a cross check
         if LAST_5_DIGITS_OF_PI[ndigits] == endDigits:
-            logging.info("Last 5 digits of {} were {} as expected at offset {:,}"
-                .format(SAYPI,endDigits,ndigits-5 ))
+            logging.info("Last 5 digits of π were {} as expected at offset {:,}"
+                .format(endDigits,ndigits-5 ))
         else:
             logging.warning("\n\nWRONG WRONG WRONG\nLast 5 digits were {} and are WRONG should be {}\nWRONG WRONG WRONG\n"
                 .format(endDigits,LAST_5_DIGITS_OF_PI[ndigits]) )
@@ -536,10 +532,10 @@ if __name__ == '__main__':
     with open(outFileName, mode='wt',encoding="utf-8") as outfile:
         outfile.write(pi)
     time_to_write = time.time() - startWrite
-    logging.info("Calculated {} to {:,} digits using a formula of:\n {} {} "
-        .format(SAYPI,ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
-    logging.debug('Wrote {:,} digits of {} to file {} in {}'
-        .format(ndigits,SAYPI,outFileName,str(timedelta(seconds=time_to_write))))
+    logging.info("Calculated π to {:,} digits using a formula of:\n {} {} "
+        .format(ndigits,algox+1,say_formula(name,mults,denoms,operators) ) )
+    logging.debug('Wrote {:,} digits of π to file {} in {}'
+        .format(ndigits,outFileName,str(timedelta(seconds=time_to_write))))
     logging.info("Calculation took {:,} iterations and {}."
         .format(int(iters),str(timedelta(seconds=time_to_calc))) )
     sys.exit(0)
