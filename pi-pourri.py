@@ -48,14 +48,9 @@ try:
 except ImportError:
     raise ImportError('This program requires gmpy2, please insatll. exiting....')
 
-# Change logging to INFO or WARNING to see less output
-logging.basicConfig(level=("DEBUG"),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
-
-if sys.getdefaultencoding() != 'utf-8':
-    logging.warning('char encoding is "{}" not utf-8 Some characters like pi may not print correctly'
-            .format(sys.getdefaultencoding()) )
-
 # CONSTANTS
+LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+DEFAULT_LOG_LEVEL = "INFO"
 LOG2_10 = 3.321928094887362
 LAST_5_DIGITS_OF_PI = {
              10 : "26535",
@@ -482,7 +477,8 @@ if __name__ == '__main__':
                 help="How many digits to calculate.  Default is %(default)s ")
     parser.add_argument('-a','--algo',nargs=1, dest='algo', metavar=FROM_RANGE, default=[4],
                 type=partial(range_type, rngMin=1, rngMax=NUM_OF_FORMULAE), required=False, help="Which Machin(like) formula. Default is %(default)s")
-
+    parser.add_argument( "--verbose", "-v", dest="log_level", action="append_const",  const=-1,)
+    parser.add_argument( "--quiet", "-q", dest="log_level",action="append_const", const=1,)
     args = parser.parse_args(sys.argv[1:])
     if args.max_digits:
         ndigits = int(args.max_digits[0])
@@ -490,13 +486,19 @@ if __name__ == '__main__':
         outFileName =  args.filename
     if args.algo:
         algox =  args.algo[0] - 1
-
+    log_level = LOG_LEVELS.index(DEFAULT_LOG_LEVEL)
+    if args.log_level:
+        for adjustment in args.log_level or ():
+            log_level = min(len(LOG_LEVELS) - 1, max(log_level + adjustment, 0))     
+    LOGLEVEL = LOG_LEVELS[log_level]
     start_time = time.time()  # Start the clock for total time
 
     name = SET_OF_NAMES[algox]  # pull the chosen formula list from the list of formulae
     denoms = SET_OF_DENOMS[algox]
     mults = SET_OF_MULTS[algox]
     operators = SET_OF_OPERS[algox]
+    # Change logging to DEBUG or WARNING with -v or -q to see more or less output
+    logging.basicConfig(level=(LOGLEVEL),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
 
     logging.info("Computing π to {:,} digits."
             .format(ndigits))
