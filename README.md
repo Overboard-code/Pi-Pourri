@@ -156,7 +156,7 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
 options:
   -h, --help            show this help message and exit
   -f [FILENAME], --file [FILENAME]
-                        File Name to write Pi to.. Default is pi.txt
+                        File Name to write Pi to.. Default is [No File]
   -d [1 to 100,000,000], --digits [1 to 100,000,000]
                         How many digits to calculate. Default is [100000]
   -a [1 to 11], --algo [1 to 11]
