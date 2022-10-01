@@ -30,7 +30,7 @@ The GMPY2.const_pi() function (--alog 11) seems to be about as fast as this AGM 
 
 Here is a sample output of Binary Splitting Chudnovsky, about 3 minutes for 100 million digits on my old laptop:
 ```
-python pi-pourri.py -d 100,000,000 -a 10
+python pi-pourri.py -d 100,000,000 -a 10 -v -f pi.txt
 [INFO] 2022-09-25 15:59:14,361 <module>: MainProcess Computing π to 100,000,000 digits.
 [DEBUG] 2022-09-25 15:59:24,276 compute: MainProcess Starting 	Chudnovsky brothers  1988 
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
