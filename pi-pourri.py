@@ -37,7 +37,7 @@
 #
 from datetime import timedelta
 from functools import partial
-import sys,time,multiprocessing,unicodedata,logging,os,argparse
+import sys,time,multiprocessing,logging,os,argparse
 try:
     # https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
     import Colorer
@@ -47,6 +47,7 @@ try:
     from gmpy2 import mpz,isqrt,mpfr,atan2,sqrt,get_context,const_pi  # Gumpy2 mpz large ints are ten times faster than python large int
 except ImportError:
     raise ImportError('This program requires gmpy2, please insatll. exiting....')
+import mpmath as m
 
 # CONSTANTS
 LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -77,7 +78,8 @@ SET_OF_NAMES = ["John Machin 1706",
     "\tRadius Generator- Fabrice Bellard?, 1997 \n\tπ = 126N∑n=0(−1)n210n(−254n+1−14n+3+2810n+1−2610n+3−2210n+5−2210n+7+110n+9)\n",
     "\tThe Square AGM - Salamin & Brent, 1976\n\tπ = limit as n goes to infinity  (an+bn)**2/(4tn)\n",
      "\tChudnovsky brothers  1988 \n\tπ = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))\n",
-     "\tconst_pi() function from the gmpy2 library" ]
+     "\tconst_pi() function from the gmpy2 library",
+     "\tmp.pi() function from the mpmath library" ]
 SET_OF_MULTS = [ [4,1],  # Machin 1706
     [44,7,12,24], #  F. C. M. Störmer 1896
     [12,32,5,12], # Kikuo Takano (1982)
@@ -88,7 +90,8 @@ SET_OF_MULTS = [ [4,1],  # Machin 1706
     ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
     ["Place","holder"],  # Chudnovsky brothers  1988
-    ["Place","holder"] ]  # gmpy2 const_pi() 
+    ["Place","holder"],  # gmpy2 const_pi() 
+    ["Place","holder"] ] # mpmath.pi
 SET_OF_DENOMS = [ [5,239],
     [57,239,682,12943],
     [49,57,239,110443],
@@ -99,7 +102,8 @@ SET_OF_DENOMS = [ [5,239],
     ["Place","holder"], # Improved Hex - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
     ["Place","holder"], # Chudnovsky brothers  1988
-    ["Place","holder"] ]  # gmpy2 const_pi() 
+    ["Place","holder"], # gmpy2 const_pi() 
+    ["Place","holder"] ]  # mpmath.pi
 SET_OF_OPERS = [ [1,-1],
     [1,1,-1,1],
     [1,1,-1,1],
@@ -109,9 +113,9 @@ SET_OF_OPERS = [ [1,-1],
     [1,1,1,-1,-1,-1,-1,-1,1,-1,-1],
     ["Place","holder"], # Improved Hex/Radius - Fabrice Bellard, 1997
     ["Place","holder"], # The Square AGM - Salamin & Brent, 1976
-    ["Place","holder"], # Chudnovsky brothers  1988
-    ["Place","holder"] ]  # gmpy2 const_pi() 
-
+    ["Place","holder"], # Chudnovsky brothers  1988  
+    ["Place","holder"],  # gmpy2 const_pi() 
+    ["Place","holder"] ]  # mpmath.pi
 NUM_OF_FORMULAE = len(SET_OF_DENOMS)
 FROM_RANGE = "[1 to {}]".format(NUM_OF_FORMULAE)
 
@@ -125,7 +129,7 @@ def say_formula(credit,mults,denoms,signs):
         :return string: printed version of the formula
         """
     # format a Manchin like formula string from 3 lists and an author's credit or just print others
-    if ('Chudnovsky' in credit) or ('AGM' in credit) or ("Bellard" in credit) or ("const_pi" in credit):
+    if  '\t' in credit:
         form = credit
     else:
         form = "\t{}\n\t ".format(credit) + "π/4 = "
@@ -328,8 +332,8 @@ class slow_chudnovsky:
     def compute(self):
         get_context().precision =  int(LOG2_10 * (self.ndigits + 20) )
         self.start_time = time.time()
-        logging.debug("Starting {} formula to {:,} decimal places"
-                .format(name,self.ndigits) )
+        logging.debug("Starting Chudnovsky formula to {:,} decimal places"
+                .format(self.ndigits) )
         while True:
             self.iters += mpz(1)
             if self.iters % self.M10K  == mpz(0):
@@ -345,8 +349,8 @@ class slow_chudnovsky:
         # convert to a fraction 
         total_sum = mpfr(self.A * self.a_sum + self.B * self.b_sum)
         pi = ((self.D * sqrt(self.E)) / total_sum)*self.scale
-        logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
-                .format( name, int(self.iters),time.time() - self.start_time))
+        logging.debug('Chudnovsky calulation Done! {:,} iterations and {:.2f} seconds.'
+                .format(int(self.iters),time.time() - self.start_time))
         # Chop off extra 20 digits 
         return "{0:.{1}Df}".format(pi,self.ndigits),int(self.iters),time.time() - self.start_time
 
@@ -382,12 +386,12 @@ class PiChudnovsky:
         """ Computation """
         try:
             self.start_time = time.time()
-            logging.debug("Starting {} formula to {:,} decimal places"
-                .format(name,ndigits) )
+            logging.debug("Starting Chudnovsky with Binary Splitting formula to {:,} decimal places"
+                .format(self.ndigits) )
             __, q, t = self.__bs(mpz(0), self.n)  # p is just for recursion
             pi = (q * self.D * self.sqrt_c) // t
-            logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
-                .format( name, int(self.iters),time.time() - self.start_time))
+            logging.debug('Chudnovsky with Binary Splitting calulation Done! {:,} iterations and {:.2f} seconds.'
+                .format( int(self.iters),time.time() - self.start_time))
             pi_s = pi.digits() # gmpy2's digits() returns a string of the mpz int '314....'
             pi_o = f"{pi_s[:1]}.{pi_s[1:]}"  # There has to be a better way to insert a '.' after the 3!
             return pi_o,int(self.iters),time.time() - self.start_time
@@ -438,14 +442,36 @@ class PiConstant:
 
     def compute(self):
         """ Computation """
-        logging.debug("Starting {} formula to {:,} decimal places"
-                .format(name,self.ndigits) )
+        logging.debug("Starting GMPY2.const_pi() formula to {:,} decimal places"
+                .format(self.ndigits) )
         precn = int((self.ndigits+2) * LOG2_10) 
         self.start_time = time.time()
         my_pi = "{0:.{1}Df}".format(const_pi(precn),ndigits)
-        logging.debug('{} calulation Done! {:,} iterations and {:.2f} seconds.'
-                .format( name, int(self.iters),time.time() - self.start_time))
+        logging.debug('GMPY2.const_pi() calulation Done! {:,} iterations and {:.2f} seconds.'
+                .format(int(self.iters),time.time() - self.start_time))
         return my_pi,self.iters,time.time()-self.start_time 
+
+class PiMPmath:
+    def __init__(self,ndigits):
+        """ Initialization
+        :param int ndigits: digits of PI computation
+        """
+        self.ndigits = ndigits
+        self.iters = 1
+        self.start_time = 0
+
+    def compute(self):
+        """ Computation """
+        logging.debug("Starting MPmath.mp.pi() formula to {:,} decimal places"
+                .format(self.ndigits) )
+        m.mp.dps = int(self.ndigits+5)
+        self.start_time = time.time()
+        pi = m.mp.pi
+        my_pi =  m.nstr(pi,self.ndigits+4)[:-3]
+        logging.debug('MPmath.mp.pi() calulation Done! {:,} iterations and {:.2f} seconds.'
+                .format(int(self.iters),time.time() - self.start_time))
+        return my_pi,self.iters,time.time()-self.start_time 
+
 
 # Main for running one of the classes and saving the output
 if __name__ == '__main__':
@@ -497,7 +523,7 @@ if __name__ == '__main__':
     denoms = SET_OF_DENOMS[algox]
     mults = SET_OF_MULTS[algox]
     operators = SET_OF_OPERS[algox]
-    # Change logging to DEBUG or WARNING with -v or -q to see more or less output
+    # Change logging to INFO or WARNING to see less output
     logging.basicConfig(level=(LOGLEVEL),format='[%(levelname)s] %(asctime)s %(funcName)s: %(processName)s %(message)s')
 
     logging.info("Computing π to {:,} digits."
@@ -515,7 +541,10 @@ if __name__ == '__main__':
                 if "const_pi" in name:
                     obj = PiConstant(ndigits)
                 else:
-                    obj = PiMachin(ndigits,name,denoms,mults,operators)
+                    if "mpmath" in name:
+                        obj = PiMPmath(ndigits)
+                    else:
+                        obj = PiMachin(ndigits,name,denoms,mults,operators)
     # Calculate Pi using selected formula
     pi,iters,time_to_calc = obj.compute()
 
