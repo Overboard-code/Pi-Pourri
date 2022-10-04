@@ -69,37 +69,36 @@ Here is a version of Craig Wood's chart:
 
 Here is the help for the program type ```python3 pi-pourri.py -h```  to see it
 ```
-usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
-                    [-a [1 to 11]]
+usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]] [-a [1 to 12]] [--verbose] [--quiet]
 
  pi-pourri.py runs an algoritym from a list to calulate Pi to a number of decimal places
       Default: pi-pourri.py --digits 100000 --file pi.txt --alog 4
 
       So -d 100,000,000 will take a while to finish, -d 1,000,000 very quickly
-      A last 5 digit check is done on powers of ten (10,...1,000,000,000)
+      A last 5 digit validity check is done on powers of ten (10,...100,000,000)
  eg.  pi-pourri.py --file elbow.txt -d 1000000 -a 10
       pi-pourri.py -f test.txt -d 123,456
 
       List of Formulae:
 
  1 	John Machin 1706
-	 π/4 =  4*arctan(1/5)
+	π/4 =  4*arctan(1/5)
  		- arctan(1/239)
  
  2 	F. C. M. Störmer 1896
-	 π/4 =  44*arctan(1/57)
+	π/4 =  44*arctan(1/57)
  		+ 7*arctan(1/239)
  		- 12*arctan(1/682)
  		+ 24*arctan(1/12943)
  
  3 	Kikuo Takano 1982
-	 π/4 =  12*arctan(1/49)
+	π/4 =  12*arctan(1/49)
  		+ 32*arctan(1/57)
  		- 5*arctan(1/239)
  		+ 12*arctan(1/110443)
  
  4 	Hwang Chien-Lih, 1997
-	 π/4 =  183*arctan(1/239)
+	π/4 =  183*arctan(1/239)
  		+ 32*arctan(1/1023)
  		- 68*arctan(1/5832)
  		+ 12*arctan(1/110443)
@@ -107,7 +106,7 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
  		- 100*arctan(1/6826318)
  
  5 	Hwang Chien-Lih, 2003
-	 π/4 =  183*arctan(1/239)
+	π/4 =  183*arctan(1/239)
  		+ 32*arctan(1/1023)
  		- 68*arctan(1/5832)
  		+ 12*arctan(1/113021)
@@ -116,7 +115,7 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
  		+ 12*arctan(1/43599522992503626068)
  
  6 	Jörg Uwe Arndt 1993 
-	 π/4 =  36462*arctan(1/390112)
+	π/4 =  36462*arctan(1/390112)
  		+ 135908*arctan(1/485298)
  		+ 274509*arctan(1/683982)
  		- 39581*arctan(1/1984933)
@@ -129,7 +128,7 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
  		- 43938*arctan(1/2189376182)
  
  7 	Hwang Chien-Lih, 2004
-	 π/4 =  36462*arctan(1/51387)
+	π/4 =  36462*arctan(1/51387)
  		+ 26522*arctan(1/485298)
  		+ 19275*arctan(1/683982)
  		- 3119*arctan(1/1984933)
@@ -151,16 +150,17 @@ usage: pi-pourri.py [-h] [-f [FILENAME]] [-d [1 to 1,000,000,000]]
 	π = (Q(0, N) / 12T(0, N) + 12AQ(0, N))**(C**(3/2))
  
  11 	const_pi() function from the gmpy2 library 
+ 12 	mp.pi() function from the mpmath library 
  
 
 options:
   -h, --help            show this help message and exit
   -f [FILENAME], --file [FILENAME]
                         File Name to write Pi to.. Default is [No File]
-  -d [1 to 100,000,000], --digits [1 to 100,000,000]
+  -d [1 to 1,000,000,000], --digits [1 to 1,000,000,000]
                         How many digits to calculate. Default is [100000]
-  -a [1 to 11], --algo [1 to 11]
+  -a [1 to 12], --algo [1 to 12]
                         Which Machin(like) formula. Default is [4]
   --verbose, -v
-  --quiet, -q			
+  --quiet, -q
 ```
