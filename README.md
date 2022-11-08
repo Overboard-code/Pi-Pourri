@@ -2,7 +2,7 @@
 Several formulae for calculating 100 million digits of Pi in less than 5 minutes and a Billion in an hour, using python and GMPY2 
 
 I wanted to see how long it would take to calulate pi to a million places to answer a kid's question.  
- Turns out a million is about .6 seconds.
+ Turns out a million is about 0.6 seconds.
  
 You can use Chudnovsky (--alog 10) to calculate 1 billion digits in about 35 minutes. Others take around an hour or so.  Manchin formulas take longer, I only had patience for 100 million at 35 minutes, Manchin would take about 9 hours for a billion I think. Memory gets to be a big deal for Manchin 30 or forty GIG.    Don't even try a million with Bellard (--alog 8).   
 
