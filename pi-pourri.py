@@ -557,8 +557,9 @@ if __name__ == '__main__':
             logging.warning("\n\nWRONG WRONG WRONG\nLast 5 digits were {} and are WRONG should be {}\nWRONG WRONG WRONG\n"
                 .format(endDigits,LAST_5_DIGITS_OF_PI[ndigits]) )
     else:
-        logging.info("Did not check last 5 digits of result {} wasn't in the list of known values"
-            .format(ndigits) )
+        endDigits = pi[-5:]  # Pull the last 5 digits  
+        logging.info("Did not check last 5 digits: {} of pi to {:,} digits. It wasn't in the list of known values."
+            .format(endDigits,ndigits) )
     if outFileName != "No File":  # File write? 
         startWrite = time.time()
         with open(outFileName, mode='wt',encoding="utf-8") as outfile:
