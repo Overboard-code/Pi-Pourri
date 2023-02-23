@@ -31,7 +31,8 @@
 #
 #   All of the formulae can get to a million digits in a few seconds  Real differences start to show up around 10 million.
 #   It takes about two and a half minutes for Chudnovsky(8) to get to 100 Million digits
-#   The parser will allow -d as high as a Hundred Million. Chudnovsky and AGM fail at a Billion because th calulation is too large for GMPY.
+#   The parser will allow -d as high as a Billion. Chudnovsky and AGM fail at afer a Billion or so because the calulation 
+#   is too large for my laptop. GMPY2 will go to trillions with enough memory space. 
 #   100 million digits takes anywhere from 3 to 45 minutes depending on which formula is used
 #   I used crude timeing using time() - start_time to generate elapsed seconds  There are better ways
 #
